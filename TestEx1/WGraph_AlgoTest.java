@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * This is a TEST class for the weighted_graph_algorithm, check most if not all, possible outcomes with the class.
  * @author Alex Baranov
  */
-class WGraph_AlgoTestAlex {
+class WGraph_AlgoTest {
     private static Random _rand;
     private static int _seed;
 
