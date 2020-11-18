@@ -1,4 +1,4 @@
-package ex1;
+package src;
 
 import java.io.*;
 import java.util.*;

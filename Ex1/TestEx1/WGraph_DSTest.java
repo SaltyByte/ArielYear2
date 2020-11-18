@@ -1,6 +1,6 @@
-import ex1.WGraph_DS;
-import ex1.node_info;
-import ex1.weighted_graph;
+import src.WGraph_DS;
+import src.node_info;
+import src.weighted_graph;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

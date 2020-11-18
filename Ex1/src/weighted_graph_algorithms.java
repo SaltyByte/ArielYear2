@@ -1,4 +1,4 @@
-package ex1;
+package src;
 import java.util.List;
 /**
  * This interface represents an Undirected (positive) Weighted Graph Theory algorithms including:
