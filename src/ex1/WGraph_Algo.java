@@ -117,17 +117,20 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
         node_info destNode = g.getNode(dest);
         list.add(destNode);
         boolean finished = false;
+        int nextNodeIndex = 0;
         while (!finished) { // while loop, adds shortest path from dest to src
-            node_info node = list.get(0);
+            node_info node = list.get(nextNodeIndex);
             for (node_info n : g.getV(node.getKey())) {
                 if (n.getKey() == srcNode.getKey()) {
-                    list.add(0, n);
+                    list.add(n);
                     finished = true;
                 } else if (Integer.parseInt(node.getInfo()) == n.getKey() && !list.contains(n)) {
-                    list.add(0, n);
+                    list.add(n);
+                    nextNodeIndex++;
                 }
             }
         }
+        Collections.reverse(list);
         return list;
     }
 
@@ -218,7 +221,7 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
         while (!q.isEmpty()) {
             node_info node = q.peek();
             for (node_info n : g.getV(node.getKey())) {
-                if (n.getTag() > node.getTag() && !q.contains(n)) {
+                if (node.getTag() < n.getTag() && !q.contains(n)) {
                     q.add(n);
                 }
                 double edge = g.getEdge(node.getKey(), n.getKey());

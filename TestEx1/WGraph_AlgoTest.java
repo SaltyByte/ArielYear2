@@ -156,6 +156,10 @@ class WGraph_AlgoTest {
         assertEquals(29,ga.shortestPathDist(8,10));
         assertEquals(0,ga.shortestPathDist(5,5));
         assertEquals(8,ga.shortestPathDist(9,2));
+        assertEquals(17,ga.shortestPathDist(13,5));
+        assertEquals(17,ga.shortestPathDist(5,13));
+        assertEquals(33,ga.shortestPathDist(13,8));
+        assertEquals(33,ga.shortestPathDist(8,13));
         g.removeEdge(4,5);
         g.removeEdge(9,5);
         assertEquals(-1,ga.shortestPathDist(1,5));
@@ -180,12 +184,17 @@ class WGraph_AlgoTest {
         assertEquals(lst,ga.shortestPath(6,1));
         lst.clear();
         lst.add(g.getNode(13));
-        assertEquals(lst,ga.shortestPath(13,13));
         lst.add(g.getNode(12));
+        lst.add(g.getNode(10));
+        lst.add(g.getNode(11));
+        lst.add(g.getNode(6));
         lst.add(g.getNode(5));
         lst.add(g.getNode(9));
         lst.add(g.getNode(14));
         assertEquals(lst,ga.shortestPath(13,14));
+        lst.clear();
+        lst.add(g.getNode(13));
+        assertEquals(lst,ga.shortestPath(13,13));
         g.removeEdge(4,5);
         g.removeEdge(9,5);
         assertNull(ga.shortestPath(13,14));
@@ -267,10 +276,11 @@ class WGraph_AlgoTest {
         g.connect(7, 9, 5);
         g.connect(9, 14, 7);
         g.connect(9, 5, 3);
-        g.connect(5, 12, 5);
-        g.connect(12, 13, 7);
+        g.connect(5, 12, 17);
+        g.connect(12, 13, 2);
         g.connect(8,3,6);
         g.connect(10,11,4);
+        g.connect(10,12,2);
         return g;
     }
 }
