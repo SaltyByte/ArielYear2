@@ -1,4 +1,4 @@
-package src;
+package ex1;
 
 import java.io.Serializable;
 import java.util.Collection;
