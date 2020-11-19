@@ -37,7 +37,6 @@ public class WGraph_DS implements weighted_graph, Serializable {
     public WGraph_DS(weighted_graph g) {
         node_info n1 = new NodeInfo(1);
         node_info n2 = new NodeInfo(1);
-        System.out.println(n1.hashCode() + "   " + n2.hashCode());
         this.keys = new HashMap<>();
         this.edges = new HashMap<>();
         if (g != null) {

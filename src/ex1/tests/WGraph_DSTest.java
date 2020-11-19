@@ -119,7 +119,6 @@ class WGraph_DSTest {
         assertTrue(g.getV(5).contains(g.getNode(4)));
         assertTrue(g.getV(5).contains(g.getNode(6)));
         assertTrue(g.getV(5).contains(g.getNode(12)));
-        System.out.println(g.getV(5));
     }
 
     @Test
