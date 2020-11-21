@@ -161,6 +161,14 @@ class WGraph_AlgoTest {
         assertEquals(17,ga.shortestPathDist(5,13));
         assertEquals(33,ga.shortestPathDist(13,8));
         assertEquals(33,ga.shortestPathDist(8,13));
+        assertEquals(15,ga.shortestPathDist(14,2));
+        assertEquals(15,ga.shortestPathDist(2,14));
+        assertEquals(16,ga.shortestPathDist(9,10));
+        assertEquals(16,ga.shortestPathDist(10,9));
+        assertEquals(10,ga.shortestPathDist(5,4));
+        assertEquals(10,ga.shortestPathDist(4,5));
+        assertEquals(-1,ga.shortestPathDist(10,15));
+
         g.removeEdge(4,5);
         g.removeEdge(9,5);
         assertEquals(-1,ga.shortestPathDist(1,5));

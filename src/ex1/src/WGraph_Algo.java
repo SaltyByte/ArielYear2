@@ -18,6 +18,7 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
 
     private weighted_graph g;
 
+
     /**
      * Initialize the graph on which this set of algorithms operates on.
      * @param g graph object
@@ -204,7 +205,9 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
     }
 
     /**
-     * Same as the first DijkstraAlgo method but stops when it encounters the dest node and
+     * Same as the first DijkstraAlgo method but stops when it encounters the dest node.
+     * Instead of running all over the graph, it stops on the dest node.
+     * Because we use priority queue it must be the shortest path.
      * @param src - source node to start the algorithm
      * @param dest - destination node which stops the algorithm
      */
