@@ -1,4 +1,4 @@
-package ex1.src;
+package src;
 
 public interface node_info {
     /**

@@ -1,11 +1,11 @@
-package ex1.tests;
+package tests;
 
 
-import ex1.src.WGraph_Algo;
-import ex1.src.WGraph_DS;
-import ex1.src.node_info;
-import ex1.src.weighted_graph;
-import ex1.src.weighted_graph_algorithms;
+import src.WGraph_Algo;
+import src.WGraph_DS;
+import src.node_info;
+import src.weighted_graph;
+import src.weighted_graph_algorithms;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
