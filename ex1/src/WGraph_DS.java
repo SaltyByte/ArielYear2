@@ -22,12 +22,10 @@ public class WGraph_DS implements weighted_graph, Serializable {
      * Default constructor
      */
     public WGraph_DS() {
-
         mc = 0;
         edgeSize = 0;
         this.keys = new HashMap<>();
         this.edges = new HashMap<>();
-
     }
 
     /**
@@ -35,8 +33,6 @@ public class WGraph_DS implements weighted_graph, Serializable {
      * @param g graph - the desired graph to copy
      */
     public WGraph_DS(weighted_graph g) {
-        node_info n1 = new NodeInfo(1);
-        node_info n2 = new NodeInfo(1);
         this.keys = new HashMap<>();
         this.edges = new HashMap<>();
         if (g != null) {
