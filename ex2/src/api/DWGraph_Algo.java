@@ -1,14 +1,11 @@
 package api;
 
-import src.node_info;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
     private directed_weighted_graph graph;
+    private HashMap<Integer, TagWeight> tags;
+
 
     @Override
     public void init(directed_weighted_graph g) {
@@ -34,10 +31,9 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if (graph == null || graph.getV().size() <= 1) {
             return true;
         }
-        node_data node = graph.getV().iterator().next();
-        Dijkstra(node.getKey());
-        for (node_data n : graph.getV()) {
-            if (n.getWeight() == Double.POSITIVE_INFINITY) {
+        for (node_data node : graph.getV()) {
+            Dijkstra(node.getKey(),null);
+            if (tags.size() != graph.nodeSize()){
                 return false;
             }
         }
@@ -46,12 +42,71 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        if (graph == null || graph.getNode(src) == null || graph.getNode(dest) == null){
+            return -1;
+        }
+        if (src == dest) {
+            return 0;
+        }
+        Dijkstra(src,dest);
+        if (!tags.containsKey(dest)) {
+            return -1;
+        }
+        return tags.get(dest).getSumWeight();
     }
 
     @Override
     public List<node_data> shortestPath(int src, int dest) {
-        return null;
+        if (shortestPathDist(src, dest) == -1 || graph.getV().isEmpty()) {
+            return null;
+        }
+        List<node_data> list = new ArrayList<>();
+        if (src == dest) {
+            list.add(graph.getNode(src));
+            return list;
+        }
+        node_data destNode = graph.getNode(dest);
+        list.add(destNode);
+        boolean finished = false;
+        int nextNodeIndex = 0;
+        while (!finished) { // while loop, adds shortest path from dest to src
+            node_data node = list.get(nextNodeIndex);
+            list.add(tags.get(node.getKey()).getParent());
+            nextNodeIndex++;
+            if(list.get(list.size() - 1) == graph.getNode(src)){
+                finished = true;
+            }
+        }
+        Collections.reverse(list);
+        return list;
+    }
+
+    private void Dijkstra(int src, Integer dest) {
+        tags = new HashMap<>();
+
+        node_data nodeSrc = graph.getNode(src);
+        Queue<node_data> q = new PriorityQueue<>(new WeightComparator());
+        q.add(nodeSrc);
+        TagWeight tag = new TagWeight(null, 0);
+        tags.put(src, tag);
+        while (!q.isEmpty()) {
+            node_data node = q.poll();
+            for (edge_data edge : graph.getE(node.getKey())) {
+                node_data neighbor = graph.getNode(edge.getDest());
+                if (!tags.containsKey(neighbor.getKey()) && !q.contains(neighbor)) {
+                    TagWeight t = new TagWeight(node, edge.getWeight() + tags.get(node.getKey()).getSumWeight());
+                    tags.put(edge.getDest(), t);
+                    q.add(neighbor);
+                }
+                else if (edge.getWeight() + tags.get(edge.getSrc()).getSumWeight() < tags.get(edge.getDest()).getSumWeight()) {
+                    TagWeight t = new TagWeight(node, edge.getWeight() + tags.get(node.getKey()).getSumWeight());
+                    tags.put(edge.getDest(), t);
+                }
+                if (dest != null && neighbor.getKey() == dest){
+                    return;
+                }
+            }
+        }
     }
 
     @Override
@@ -64,31 +119,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return false;
     }
 
-    private void Dijkstra(int src){
-        for(node_data n : graph.getV()){
-            n.setInfo("");
-            n.setWeight(Double.POSITIVE_INFINITY);
-        }
-        graph.getNode(src).setWeight(0);
-        node_data nodeOne = graph.getNode(src);
-        Queue<node_data> q = new PriorityQueue<>(new WeightComparator());
-        q.add(nodeOne);
-        while (!q.isEmpty()) {
-            node_data node = q.peek();
-            for (edge_data edge : graph.getE(node.getKey())) {
-                node_data neighbor = graph.getNode(edge.getDest());
-                if (node.getWeight() < neighbor.getWeight() && !q.contains(neighbor)) {
-                    q.add(neighbor);
-                }
-                double weight = graph.getEdge(node.getKey(), neighbor.getKey()).getWeight();
-                if (node.getWeight() + weight < neighbor.getWeight()) {
-                    neighbor.setWeight(node.getWeight() + weight);
-                    neighbor.setInfo("" + node.getKey());
-                }
-            }
-            q.remove();
-        }
-    }
     private static class WeightComparator implements Comparator<node_data> {
 
         /**
@@ -107,6 +137,23 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 return -1;
             }
             return 0;
+        }
+    }
+
+  private class TagWeight {
+        private double sumWeight;
+        private node_data parent;
+
+        public TagWeight(node_data parent, double sumWeight){
+            this.parent = parent;
+            this.sumWeight = sumWeight;
+        }
+        public double getSumWeight(){
+            return sumWeight;
+        }
+
+        public node_data getParent() {
+            return parent;
         }
     }
 }

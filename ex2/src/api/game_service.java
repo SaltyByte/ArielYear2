@@ -1,6 +1,7 @@
 package api;
 
 import java.io.Serializable;
+
 /**
  * This interface represents the main functionality of the game-server, allowing a User the following:
  * 1. construct_a_Game(int type);
@@ -24,7 +25,7 @@ public interface game_service extends Serializable{
 	 * Returns an interface to the graph (should NOT be used) for final version - for testing only.
 	 * @return
 	 */
-	public directed_weighted_graph getJava_Graph_Not_to_be_used();
+	default directed_weighted_graph getJava_Graph_Not_to_be_used() {return null;}
 	/**
 	 * Returns a JSON string, representing all Pokemons (fixed bonus coin).
 	 * @return
