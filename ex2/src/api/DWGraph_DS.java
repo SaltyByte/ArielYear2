@@ -1,12 +1,14 @@
 package api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class DWGraph_DS implements directed_weighted_graph {
     private HashMap<Integer, node_data> nodes;
     private HashMap<Integer, HashMap<Integer, edge_data>> neighbors;
-    private HashMap<Integer, HashMap<Integer, edge_data>> inEdges; // Point of this is to point to the existing edge and not create a new one
+    private HashMap<Integer, List<Integer>> inEdges; // Point of this is to point to the existing edge and not create a new one
     private int edgeSize, mc;                                      // so in connect i also need to update this with the existing hashmap of
                                                                    // edges.
 
@@ -77,19 +79,18 @@ public class DWGraph_DS implements directed_weighted_graph {
                 neighbors.put(src, map);
             }
             if (!inEdges.containsKey(dest)) {
-                HashMap<Integer, edge_data> map = new HashMap<>();
-                inEdges.put(dest, map);
+                List<Integer> list = new ArrayList<>();
+                inEdges.put(dest, list);
             }
             if (!neighbors.get(src).containsKey(dest)) {
                 edge_data edge = new EdgeData(src, dest, w);
                 neighbors.get(src).put(dest, edge);
-                inEdges.get(dest).put(src,edge);
+                inEdges.get(dest).add(src);
                 edgeSize++;
                 mc++;
             } else if (neighbors.get(src).get(dest).getWeight() != w) {
                 edge_data edge = new EdgeData(src, dest, w);
                 neighbors.get(src).replace(dest, edge);
-                inEdges.get(dest).replace(src,edge);
                 mc++;
             }
         }
@@ -112,11 +113,12 @@ public class DWGraph_DS implements directed_weighted_graph {
     public node_data removeNode(int key) {
         node_data node = nodes.get(key);
         if (node != null) {
-            for (node_data n : getV()) {
-                removeEdge(key,n.getKey());
+            int size = getE(key).size();
+            for (int i = 0; i < size; i++) {
+                removeEdge(key,getE(key).iterator().next().getDest());
             }
-            for (edge_data edge : inEdges.get(key).values()) {
-                removeEdge(edge.getSrc(),key);
+            for (int src : inEdges.get(key)) {
+                removeEdge(src,key);
             }
             nodes.remove(key);
             mc++;
