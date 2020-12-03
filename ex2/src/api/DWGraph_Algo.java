@@ -92,17 +92,18 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!q.isEmpty()) {
             node_data node = q.poll();
             for (edge_data edge : graph.getE(node.getKey())) {
+                double sumWeight = edge.getWeight() + tags.get(node.getKey()).getSumWeight();
                 node_data neighbor = graph.getNode(edge.getDest());
                 if (!tags.containsKey(neighbor.getKey()) && !q.contains(neighbor)) {
-                    TagWeight t = new TagWeight(node, edge.getWeight() + tags.get(node.getKey()).getSumWeight());
+                    TagWeight t = new TagWeight(node, sumWeight);
                     tags.put(edge.getDest(), t);
                     q.add(neighbor);
                 }
-                else if (edge.getWeight() + tags.get(edge.getSrc()).getSumWeight() < tags.get(edge.getDest()).getSumWeight()) {
-                    TagWeight t = new TagWeight(node, edge.getWeight() + tags.get(node.getKey()).getSumWeight());
+                else if (sumWeight < tags.get(edge.getDest()).getSumWeight()) {
+                    TagWeight t = new TagWeight(node, sumWeight);
                     tags.put(edge.getDest(), t);
                 }
-                if (dest != null && neighbor.getKey() == dest){
+                if (dest != null && node.getKey() == dest){
                     return;
                 }
             }
@@ -119,7 +120,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return false;
     }
 
-    private static class WeightComparator implements Comparator<node_data> {
+    private class WeightComparator implements Comparator<node_data> {
 
         /**
          * Overrides compare method by tag (weight), if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
@@ -131,9 +132,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         @Override
         public int compare(node_data node1, node_data node2) {
-            if (node1.getTag() > node2.getTag()) {
+            double sum1 = tags.get(node1.getKey()).getSumWeight();
+            double sum2 = tags.get(node2.getKey()).getSumWeight();
+            if (sum1 > sum2) {
                 return 1;
-            } else if (node1.getTag() < node2.getTag()) {
+            } else if (sum1 <sum2) {
                 return -1;
             }
             return 0;
