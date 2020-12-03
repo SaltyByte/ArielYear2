@@ -28,6 +28,7 @@ public class DWGraph_DS implements directed_weighted_graph {
         }
         this.nodes = new HashMap<>();
         this.neighbors = new HashMap<>();
+        this.inEdges = new HashMap<>();
         for (node_data n : g.getV()) { // loop and create new nodes and copy content from each node
             node_data a = new NodeData(n.getKey());
             this.nodes.put(a.getKey(), a);
