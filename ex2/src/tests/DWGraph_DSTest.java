@@ -97,6 +97,12 @@ class DWGraph_DSTest {
 
     @Test
     void getE() {
+        directed_weighted_graph g = graph();
+        assertTrue(g.getE(5).contains(g.getEdge(5,4)));
+        assertTrue(g.getE(5).contains(g.getEdge(5,6)));
+        assertFalse(g.getE(5).contains(g.getEdge(4,5)));
+        assertFalse(g.getE(5).contains(g.getEdge(6,5)));
+        assertTrue(g.getE(4).isEmpty());
     }
 
     @Test
