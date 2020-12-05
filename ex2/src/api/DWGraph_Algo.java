@@ -1,6 +1,24 @@
 package api;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
 /**
  * This class implements dw_graph_algorithms interface that represents
@@ -20,7 +38,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Init the graph on which this set of algorithms operates on.
-	 * @param directed_weighted_graph g
+	 * @param directed_weighted_graph g - the graph needed to be initialized
 	 */
 	@Override
 	public void init(directed_weighted_graph g) {
@@ -29,7 +47,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Returns the underlying graph of which this class works.
-	 * @return directed_weighted_graph
+	 * @return directed_weighted_graph - get graph
 	 */
 	@Override
 	public directed_weighted_graph getGraph() {
@@ -38,11 +56,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Compute a deep copy of this weighted graph.
-	 * @return directed_weighted_graph
+	 * @return directed_weighted_graph - copied graph
 	 */
 	@Override
 	public directed_weighted_graph copy() {
-		if (this.graph != null){
+		if (this.graph != null) {
 			return new DWGraph_DS(this.graph);
 
 		}
@@ -52,7 +70,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	/**
 	 * Returns true if and only if there is a valid path from each node to each
 	 * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
-	 * @return boolean
+	 * @return boolean - true if graph is strongly connected and false if not connected
 	 */
 	@Override
 	public boolean isConnected() {
@@ -73,7 +91,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 * If no such path --> returns -1.
 	 * @param src - start node
 	 * @param dest - end (target) node
-	 * @return double
+	 * @return double - the shortest distance between src and dest
 	 */
 	@Override
 	public double shortestPathDist(int src, int dest) {
@@ -128,8 +146,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	/** 
 	 * Private function that uses Dijkstra algorithm to find the shortest path
 	 * according to the weight.
-	 * @param int src
-	 * @param Integer dest
+	 * @param int src - starting node
+	 * @param Integer dest - end (target) node
 	 */
 	private void Dijkstra(int src, Integer dest) {
 		tags = new HashMap<>();
@@ -162,13 +180,27 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Saves this weighted (directed) graph to the given
-	 * file name - in JSON format
-	 * @param file - the file name (may include a relative path).
-	 * @return true - iff the file was successfully saved
+	 * file name - in JSON format.
+	 * @param file - the file name (may include a relative path)
+	 * @return true - if and only if the file was successfully saved
 	 */
 	@Override
 	public boolean save(String file) {
-		return false;
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(this.graph);	
+		// Write JSON to file
+		try
+		{
+			PrintWriter pw = new PrintWriter(new File(file));
+			pw.write(json);
+			pw.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -177,11 +209,41 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 * of this class will be changed (to the loaded one), in case the
 	 * graph was not loaded the original graph should remain "as is".
 	 * @param file - file name of JSON file
-	 * @return true - if and only if the graph was successfully loaded.
+	 * @return true - if and only if the graph was successfully loaded
 	 */
 	@Override
 	public boolean load(String file) {
-		return false;
+		try 
+		{
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			gsonBuilder.setLenient();
+			gsonBuilder.registerTypeAdapter(node_data.class, new InterfaceAdapter<NodeData>(NodeData.class));
+			gsonBuilder.registerTypeAdapter(edge_data.class, new InterfaceAdapter<EdgeData>(EdgeData.class));
+			
+			Gson gson = gsonBuilder.create();
+			FileReader reader = new FileReader(file);
+			this.graph = gson.fromJson(reader, DWGraph_DS.class);	
+			System.out.println(this.graph);
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	private class InterfaceAdapter<T> implements JsonDeserializer<T> {
+
+		private Class<T> targetClass;
+
+		public InterfaceAdapter(Class<T> targetClass) {
+			this.targetClass = targetClass;
+		}
+
+		@Override
+		public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			return context.deserialize(json.getAsJsonObject(), targetClass);
+		}
 	}
 
 	/**

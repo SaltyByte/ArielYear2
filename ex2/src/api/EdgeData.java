@@ -13,9 +13,9 @@ class EdgeData implements edge_data {
 
     /**
 	 * Constructor that copies the src, dest and weight.
-	 * @param int src
-	 * @param int dest
-	 * @param double weight
+	 * @param int src - start node
+	 * @param int dest - end (target) node
+	 * @param double weight - the weight of src to dest
 	 */
     public EdgeData(int src, int dest, double weight) {
         this.src = src;
@@ -88,6 +88,6 @@ class EdgeData implements edge_data {
     }
 
     public String toString() {
-        return "|Src: " + this.src + " Dest: " + this.dest + " Weight: " + this.weight + "|";
+        return "|src: " + this.src + " dest: " + this.dest + " weight: " + this.weight + "|";
     }
 }

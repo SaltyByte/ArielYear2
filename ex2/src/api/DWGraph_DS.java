@@ -1,9 +1,7 @@
 package api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * This class implements directed_weighted_graph interface
@@ -17,7 +15,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	// This HashMap holds the node neighbors and the edges between them 
 	private HashMap<Integer, HashMap<Integer, edge_data>> neighbors = new HashMap<>();
 	// This HashMap hold the parents of nodes in the graph
-	private HashMap<Integer, List<Integer>> parents = new HashMap<>();
+	private HashMap<Integer, HashMap<Integer, edge_data>> parents = new HashMap<>();
 	private int edgeSize, mc;
 	
 	/**
@@ -70,8 +68,8 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Returns the data of the edge (src,dest), null if none.
-	 * @param int src
-	 * @param int dest
+	 * @param int src - the start node
+	 * @param int dest - end (target) node
 	 * @return edge_data edge
 	 */
 	@Override
@@ -87,7 +85,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Adds a new node to the graph with the given node_data.
-	 * @param node_data n
+	 * @param node_data n - node needed to be added to the graph
 	 */
 	@Override
 	public void addNode(node_data n) {
@@ -113,16 +111,16 @@ public class DWGraph_DS implements directed_weighted_graph {
 				HashMap<Integer, edge_data> map = new HashMap<>();
 				neighbors.put(src, map);
 			}
-			// If dest does not have parents, then create a new list and put it in parents
+			// If dest does not have parents, then create a new inner hash map and put it in parents
 			if (!parents.containsKey(dest)) {
-				List<Integer> list = new ArrayList<>();
-				parents.put(dest, list);
+				HashMap<Integer, edge_data> map = new HashMap<>();
+				parents.put(dest, map);
 			}
 			// If src and dest are not neighbors, then connect them
 			if (!neighbors.get(src).containsKey(dest)) {
 				edge_data edge = new EdgeData(src, dest, w);
 				neighbors.get(src).put(dest, edge);
-				parents.get(dest).add(src);
+				parents.get(dest).put(src, edge);
 				edgeSize++;
 				mc++;	
 			}
@@ -165,7 +163,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	 * and removes all edges which starts or ends at this node.
 	 * This method should run in O(k), V.degree=k, as all the edges should be removed.
 	 * @return the data of the removed node (null if none). 
-	 * @param key
+	 * @param key - the key of the node that needed to be removed from the graph
 	 */
 	@Override
 	public node_data removeNode(int key) {
@@ -178,7 +176,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 				removeEdge(key,getE(key).iterator().next().getDest());
 			}
 			// Loop over the src from the parents map and remove their edges
-			for (int src : parents.get(key)) {
+			for (int src : parents.get(key).keySet()) {
 				removeEdge(src, key);
 			}
 			// Remove the node from the list of nodes in the graph
@@ -191,8 +189,8 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Deletes the edge from the graph,
-	 * @param int src
-	 * @param int dest
+	 * @param int src - start node
+	 * @param int dest - end (target) node
 	 * @return edge_data - the data of the removed edge (null if none).
 	 */
 	@Override
@@ -203,7 +201,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 			if (neighbors.containsKey(src) && neighbors.get(src).containsKey(dest)) {
 				edgeSize--;
 				mc++;
-				//parents.get(dest).remove(src);
+				parents.get(dest).remove(src);
 				return neighbors.get(src).remove(dest);
 			}
 		}
@@ -212,7 +210,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/** 
 	 * Returns the number of vertices (nodes) in the graph.
-	 * @return int node size
+	 * @return int node size - the number of nodes in the graph
 	 */
 	@Override
 	public int nodeSize() {
@@ -221,7 +219,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/** 
 	 * Returns the number of edges (assume directional graph).
-	 * @return int edge size
+	 * @return int edge size - the number of edges in the graph
 	 */
 	@Override
 	public int edgeSize() {
@@ -230,7 +228,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Returns the Mode Count - for testing changes in the graph.
-	 * @return int mode counter
+	 * @return int mode counter - the count of any changes in the graph
 	 */
 	@Override
 	public int getMC() {

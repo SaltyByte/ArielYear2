@@ -14,13 +14,13 @@ public class NodeData implements node_data {
 
     /**
 	 * Constructor that copies the key.
-	 * @param int key
+	 * @param int key - the key that needs to be copied
 	 */
     public NodeData(int key) {
         this.key = key;
         this.weight = 0;
     }
-
+    
     /**
 	 * Returns the key (id) associated with this node.
 	 * @return int key
@@ -104,6 +104,6 @@ public class NodeData implements node_data {
     }
 
     public String toString() {
-        return "" + this.key;
+        return "key: " + this.key;
     }
 }
