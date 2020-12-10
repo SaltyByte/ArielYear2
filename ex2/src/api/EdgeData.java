@@ -5,7 +5,7 @@ package api;
  * the set of operations applicable on a directional
  * edge(src,dest) in a (directional) weighted graph.
  */
-class EdgeData implements edge_data {
+public class EdgeData implements edge_data {
 	
     private int src, dest, tag;
     private double weight;

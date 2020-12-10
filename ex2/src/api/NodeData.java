@@ -10,7 +10,7 @@ public class NodeData implements node_data {
     private int key, tag;
     private double weight;
     private String info;
-    private geo_location location;
+    private geo_location pos;
 
     /**
 	 * Constructor that copies the key.
@@ -36,7 +36,7 @@ public class NodeData implements node_data {
 	 */
     @Override
     public geo_location getLocation() {
-        return this.location;
+        return this.pos;
     }
 
     /** Allows changing this node's location.
@@ -44,7 +44,7 @@ public class NodeData implements node_data {
 	 */
     @Override
     public void setLocation(geo_location p) {
-        this.location = p;
+        this.pos = p;
     }
 
     /**

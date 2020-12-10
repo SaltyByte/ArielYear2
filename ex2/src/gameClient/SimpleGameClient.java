@@ -1,6 +1,4 @@
 package gameClient;
-
-import Server.Agent_Graph_Algo;
 import Server.Game_Server_Ex2;
 import api.directed_weighted_graph;
 import api.edge_data;
@@ -22,7 +20,7 @@ public class SimpleGameClient {
 		test1();
 	}
 	public static void test1() {
-		game_service game = Game_Server_Ex2.getServer(2); // you have [0,23] games
+		game_service game = Game_Server_Ex2.getServer(0); // you have [0,23] games
 		String g = game.getGraph();
 		directed_weighted_graph gg = game.getJava_Graph_Not_to_be_used();
 		//game.login(12345);  // please use your ID only as a key. uncomment this will upload your results to the server
@@ -37,9 +35,8 @@ public class SimpleGameClient {
 		int i=0;
 		while(game.isRunning()) {
 			long t = game.timeToEnd();
-		//	System.out.println("round: "+i+"  seconds to end:"+(t/1000));
 			String lg = game.move();
-			List<CL_Agent> log = Agent_Graph_Algo.getAgents(lg, gg);
+			List<CL_Agent> log = Arena.getAgents(lg, gg);
 			for(int a=0;a< log.size();a++) {
 				CL_Agent r = log.get(a);
 				int dest = r.getNextNode();

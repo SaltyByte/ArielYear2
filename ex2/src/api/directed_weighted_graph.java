@@ -1,6 +1,5 @@
 package api;
 import java.util.Collection;
-
 /**
  * This interface represents a directional weighted graph.
  * The interface has a road-system or communication network in mind - 

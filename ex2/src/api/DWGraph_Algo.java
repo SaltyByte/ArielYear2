@@ -38,7 +38,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Init the graph on which this set of algorithms operates on.
-	 * @param directed_weighted_graph g - the graph needed to be initialized
+	 * @param  g - the graph needed to be initialized
 	 */
 	@Override
 	public void init(directed_weighted_graph g) {
@@ -217,8 +217,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 		{
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gsonBuilder.setLenient();
-			gsonBuilder.registerTypeAdapter(node_data.class, new InterfaceAdapter<NodeData>(NodeData.class));
-			gsonBuilder.registerTypeAdapter(edge_data.class, new InterfaceAdapter<EdgeData>(EdgeData.class));
+			gsonBuilder.registerTypeAdapter(node_data.class, new InterfaceAdapter<>(NodeData.class));
+			gsonBuilder.registerTypeAdapter(edge_data.class, new InterfaceAdapter<>(EdgeData.class));
 			
 			Gson gson = gsonBuilder.create();
 			FileReader reader = new FileReader(file);
