@@ -90,7 +90,11 @@ public class Ex2 implements Runnable{
         return shortestPath.get(1).getKey();
     }
 
-    private static void insertAgents(game_service game, List<CL_Pokemon> pokemons) {
+    private static void insertAgents(game_service game, directed_weighted_graph gameGraph) {
+        List<CL_Pokemon> pokemons = Arena.json2Pokemons(game.getPokemons());
+        for (CL_Pokemon pokemon : pokemons) {
+            Arena.updateEdge(pokemon, gameGraph);
+        }
         pokemons.sort(new ValueComparator());
         String gameString = game.toString();
         JSONObject gameJsonObject;
@@ -101,21 +105,9 @@ public class Ex2 implements Runnable{
             for (int i = 0; i < agentNumber; i++) {
                 game.addAgent(pokemons.get(i).get_edge().getSrc());
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-//        double maxValue = 0;
-//        CL_Pokemon bestPokemon = null;
-//        for (CL_Pokemon pokemon: pokemons) {
-//            if (maxValue < pokemon.getValue()) {
-//                maxValue = pokemon.getValue();
-//                bestPokemon = pokemon;
-//            }
-//        }
-//        CL_Pokemon pokemonEdge = bestPokemon;
-//        Arena.updateEdge(pokemonEdge,gameGraph);
     }
 
     private static edge_data bestNextEdge(List<CL_Pokemon> pokemons, directed_weighted_graph gameGraph, CL_Agent agent) {
@@ -175,10 +167,8 @@ public class Ex2 implements Runnable{
         _win.setResizable(true);
         //_win.show();
         _win.setVisible(true);
-        for (CL_Pokemon pokemon : pokemons) {
-            Arena.updateEdge(pokemon, gameGraph);
-        }
-        insertAgents(game,pokemons);
+
+        insertAgents(game,gameGraph);
 
 
     }
