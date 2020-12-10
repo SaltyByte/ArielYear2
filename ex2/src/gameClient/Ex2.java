@@ -7,11 +7,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import javax.swing.*;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
 
 
 public class Ex2 implements Runnable{
@@ -24,7 +21,7 @@ public class Ex2 implements Runnable{
     }
     @Override
     public void run() {
-        int scenario_num = 0;
+        int scenario_num = 11;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
@@ -36,7 +33,7 @@ public class Ex2 implements Runnable{
             moveAgents(game, gameGraph);
             _win.repaint();
             try {
-                Thread.sleep((game.timeToEnd() / 200));
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -93,19 +90,32 @@ public class Ex2 implements Runnable{
         return shortestPath.get(1).getKey();
     }
 
-    private static edge_data insertAgents(game_service game, directed_weighted_graph gameGraph) {
-        List<CL_Pokemon> pokemons = Arena.json2Pokemons(game.getPokemons());
-        double maxValue = 0;
-        CL_Pokemon bestPokemon = null;
-        for (CL_Pokemon pokemon: pokemons) {
-            if (maxValue < pokemon.getValue()) {
-                maxValue = pokemon.getValue();
-                bestPokemon = pokemon;
+    private static void insertAgents(game_service game, List<CL_Pokemon> pokemons) {
+        pokemons.sort(new ValueComparator());
+        String gameString = game.toString();
+        JSONObject gameJsonObject;
+        try {
+            gameJsonObject = new JSONObject(gameString);
+            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
+            int agentNumber = gameJsonServer.getInt("agents");
+            for (int i = 0; i < agentNumber; i++) {
+                game.addAgent(pokemons.get(i).get_edge().getSrc());
             }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        CL_Pokemon pokemonEdge = bestPokemon;
-        Arena.updateEdge(pokemonEdge,gameGraph);
-        return pokemonEdge.get_edge();
+
+//        double maxValue = 0;
+//        CL_Pokemon bestPokemon = null;
+//        for (CL_Pokemon pokemon: pokemons) {
+//            if (maxValue < pokemon.getValue()) {
+//                maxValue = pokemon.getValue();
+//                bestPokemon = pokemon;
+//            }
+//        }
+//        CL_Pokemon pokemonEdge = bestPokemon;
+//        Arena.updateEdge(pokemonEdge,gameGraph);
     }
 
     private static edge_data bestNextEdge(List<CL_Pokemon> pokemons, directed_weighted_graph gameGraph, CL_Agent agent) {
@@ -165,21 +175,12 @@ public class Ex2 implements Runnable{
         _win.setResizable(true);
         //_win.show();
         _win.setVisible(true);
-
-
-        String gameString = game.toString();
-        JSONObject gameJsonObject;
-        try {
-            gameJsonObject = new JSONObject(gameString);
-            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
-            int agentNumber = gameJsonServer.getInt("agents");
-            for (int i = 0; i < agentNumber; i++) {
-                game.addAgent(insertAgents(game, gameGraph).getSrc());
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for (CL_Pokemon pokemon : pokemons) {
+            Arena.updateEdge(pokemon, gameGraph);
         }
+        insertAgents(game,pokemons);
+
+
     }
 
         private static class GraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
@@ -204,6 +205,25 @@ public class Ex2 implements Runnable{
                 graph.connect(src,dest,weight);
             }
             return graph;
+        }
+    }
+    private static class ValueComparator implements Comparator<CL_Pokemon> {
+
+        /**
+         * Overrides compare method by tag (weight), if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+         * used in the priorityQueue.
+         * @param  pokemon1 to compare
+         * @param  pokemon2 to compare
+         * @return - int if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+         */
+        @Override
+        public int compare(CL_Pokemon pokemon1, CL_Pokemon pokemon2) {
+            if (pokemon1.getValue() > pokemon2.getValue()) {
+                return -1;
+            } else if (pokemon1.getValue() < pokemon2.getValue()) {
+                return 1;
+            }
+            return 0;
         }
     }
 }
