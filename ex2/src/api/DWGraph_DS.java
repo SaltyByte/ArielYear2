@@ -68,8 +68,8 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Returns the data of the edge (src,dest), null if none.
-	 * @param int src - the start node
-	 * @param int dest - end (target) node
+	 * @param src - the start node
+	 * @param dest - end (target) node
 	 * @return edge_data edge
 	 */
 	@Override
@@ -85,7 +85,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Adds a new node to the graph with the given node_data.
-	 * @param node_data n - node needed to be added to the graph
+	 * @param n - node needed to be added to the graph
 	 */
 	@Override
 	public void addNode(node_data n) {
@@ -189,8 +189,8 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	/**
 	 * Deletes the edge from the graph,
-	 * @param int src - start node
-	 * @param int dest - end (target) node
+	 * @param src - start node
+	 * @param dest - end (target) node
 	 * @return edge_data - the data of the removed edge (null if none).
 	 */
 	@Override

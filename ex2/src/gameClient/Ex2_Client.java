@@ -22,7 +22,7 @@ public class Ex2_Client implements Runnable{
 	
 	@Override
 	public void run() {
-		int scenario_num = 1;
+		int scenario_num = 11;
 		game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
 	//	int id = 999;
 	//	game.login(id);
@@ -67,7 +67,7 @@ public class Ex2_Client implements Runnable{
 		String fs =  game.getPokemons();
 		List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
 		_ar.setPokemons(ffs);
-		for (int i=0;i<log.size();i++) {
+		for(int i=0;i<log.size();i++) {
 			CL_Agent ag = log.get(i);
 			int id = ag.getID();
 			int dest = ag.getNextNode();
@@ -76,7 +76,6 @@ public class Ex2_Client implements Runnable{
 			if(dest==-1) {
 				dest = nextNode(gg, src);
 				game.chooseNextEdge(ag.getID(), dest);
-				System.out.println(game);
 				System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
 			}
 		}
@@ -109,7 +108,6 @@ public class Ex2_Client implements Runnable{
 		_win = new MyFrame("test Ex2");
 		_win.setSize(1000, 700);
 		_win.update(_ar);
-		_win.setResizable(true);
 
 	
 		_win.show();
@@ -128,7 +126,7 @@ public class Ex2_Client implements Runnable{
 				int ind = a%cl_fs.size();
 				CL_Pokemon c = cl_fs.get(ind);
 				int nn = c.get_edge().getDest();
-				if(c.getType()<0) {nn = c.get_edge().getSrc();}
+				if(c.getType()<0 ) {nn = c.get_edge().getSrc();}
 				
 				game.addAgent(nn);
 			}

@@ -1,5 +1,6 @@
 package gameClient;
 
+
 import api.directed_weighted_graph;
 import api.edge_data;
 import api.geo_location;
@@ -10,27 +11,14 @@ import gameClient.util.Range2D;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 
-/**
- * This class represents a very simple GUI class to present a
- * game on a graph - you are welcome to use this class - yet keep in mind
- * that the code is not well written in order to force you improve the
- * code and not to take it "as is".
- */
-public class MyFrame extends JFrame{
-    private int _ind;
-    private Arena _ar;
-    private gameClient.util.Range2Range _w2f;
-
-    MyFrame(String a) {
-        super(a);
-        int _ind = 0;
-    }
+public class MyPanel extends JPanel implements Runnable  {
+    private Arena arena;
+    private gameClient.util.Range2Range point;
 
     public void update(Arena ar) {
-        this._ar = ar;
+        this.arena = ar;
         updateFrame();
     }
 
@@ -38,15 +26,17 @@ public class MyFrame extends JFrame{
         Range rx = new Range(20, this.getWidth() - 20);
         Range ry = new Range(this.getHeight() - 10, 150);
         Range2D frame = new Range2D(rx, ry);
-        directed_weighted_graph g = _ar.getGraph();
-        _w2f = Arena.w2f(g, frame);
+        directed_weighted_graph g = arena.getGraph();
+        point = Arena.w2f(g, frame);
+
     }
 
-    public void paint(Graphics g) {
+    @Override
+    public void paintComponent(Graphics g) {
         int w = this.getWidth();
         int h = this.getHeight();
         g.clearRect(0, 0, w, h);
-        //	updateFrame();
+        updateFrame();
         drawPokemons(g);
         drawGraph(g);
         drawAgants(g);
@@ -54,24 +44,19 @@ public class MyFrame extends JFrame{
     }
 
     private void drawInfo(Graphics g) {
-        List<String> str = _ar.get_info();
+        List<String> str = arena.get_info();
         String dt = "none";
         for (int i = 0; i < str.size(); i++) {
             g.drawString(str.get(i) + " dt: " + dt, 100, 60 + i * 20);
         }
-
     }
 
     private void drawGraph(Graphics g) {
-        directed_weighted_graph gg = _ar.getGraph();
-        Iterator<node_data> iter = gg.getV().iterator();
-        while (iter.hasNext()) {
-            node_data n = iter.next();
+        directed_weighted_graph gg = arena.getGraph();
+        for (node_data n : gg.getV()) {
             g.setColor(Color.blue);
             drawNode(n, 5, g);
-            Iterator<edge_data> itr = gg.getE(n.getKey()).iterator();
-            while (itr.hasNext()) {
-                edge_data e = itr.next();
+            for (edge_data e : gg.getE(n.getKey())) {
                 g.setColor(Color.gray);
                 drawEdge(e, g);
             }
@@ -79,13 +64,9 @@ public class MyFrame extends JFrame{
     }
 
     private void drawPokemons(Graphics g) {
-        List<CL_Pokemon> fs = _ar.getPokemons();
+        List<CL_Pokemon> fs = arena.getPokemons();
         if (fs != null) {
-            Iterator<CL_Pokemon> itr = fs.iterator();
-
-            while (itr.hasNext()) {
-
-                CL_Pokemon f = itr.next();
+            for (CL_Pokemon f : fs) {
                 Point3D c = f.getLocation();
                 int r = 10;
                 g.setColor(Color.green);
@@ -93,49 +74,60 @@ public class MyFrame extends JFrame{
                     g.setColor(Color.orange);
                 }
                 if (c != null) {
-
-                    geo_location fp = this._w2f.world2frame(c);
+                    geo_location fp = this.point.world2frame(c);
                     g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-                    //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
-
                 }
             }
         }
     }
 
     private void drawAgants(Graphics g) {
-        List<CL_Agent> rs = _ar.getAgents();
+        List<CL_Agent> rs = arena.getAgents();
         //	Iterator<OOP_Point3D> itr = rs.iterator();
         g.setColor(Color.red);
-        int i = 0;
-        while (rs != null && i < rs.size()) {
+        int i=0;
+        while(rs!=null && i<rs.size()) {
             geo_location c = rs.get(i).getLocation();
-            int r = 8;
+            int r=8;
             i++;
-            if (c != null) {
+            if(c!=null) {
 
-                geo_location fp = this._w2f.world2frame(c);
-                g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+                geo_location fp = this.point.world2frame(c);
+                g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
             }
         }
     }
 
     private void drawNode(node_data n, int r, Graphics g) {
         geo_location pos = n.getLocation();
-        geo_location fp = this._w2f.world2frame(pos);
-        g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-        g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 4 * r);
+        geo_location fp = this.point.world2frame(pos);
+        g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+        g.drawString(""+n.getKey(), (int)fp.x(), (int)fp.y()-4*r);
     }
 
     private void drawEdge(edge_data e, Graphics g) {
-        directed_weighted_graph gg = _ar.getGraph();
+        directed_weighted_graph gg = arena.getGraph();
         geo_location s = gg.getNode(e.getSrc()).getLocation();
         geo_location d = gg.getNode(e.getDest()).getLocation();
-        geo_location s0 = this._w2f.world2frame(s);
-        geo_location d0 = this._w2f.world2frame(d);
-        g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-        //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+        geo_location s0 = this.point.world2frame(s);
+        geo_location d0 = this.point.world2frame(d);
+        g.drawLine((int)s0.x(), (int)s0.y(), (int)d0.x(), (int)d0.y());
     }
 
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
 
+    @Override
+    public void  run() {
+
+    }
 }

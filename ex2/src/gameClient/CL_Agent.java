@@ -52,6 +52,7 @@ public class CL_Agent {
 					this.setSpeed(speed);
 					this.setNextNode(dest);
 					this.setMoney(value);
+
 				}
 			}
 			catch(Exception e) {
@@ -166,4 +167,5 @@ public class CL_Agent {
 		public void set_sg_dt(long _sg_dt) {
 			this._sg_dt = _sg_dt;
 		}
+
 	}

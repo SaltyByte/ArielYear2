@@ -130,19 +130,15 @@ class DWGraph_AlgoTest {
 	}
 
 	@Test
-	void save() {
+	void saveAndLoad() {
 		directed_weighted_graph g = fullGraph();
 		dw_graph_algorithms ga = new DWGraph_Algo();
 		ga.init(g);
 		ga.save("graph.json");
-	}
+		dw_graph_algorithms ha = new DWGraph_Algo();
+		ha.load("graph.json");
+		assertNotNull(ha.getGraph());
 
-	@Test
-	void load() {
-		directed_weighted_graph g = null;
-		dw_graph_algorithms ga = new DWGraph_Algo();
-		ga.init(g);
-		ga.load("graph.json");
 	}
 
 	private static directed_weighted_graph graph() {
