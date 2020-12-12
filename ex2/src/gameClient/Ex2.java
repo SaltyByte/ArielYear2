@@ -14,32 +14,30 @@ import java.util.List;
 
 
 public class Ex2 implements Runnable {
-    private static MyPanel panel;
-    private static JFrame frame = new JFrame();
+    private static MyPanel panel = new MyPanel();
+    private static JFrame frame;
     private static Arena arena;
     private static HashMap<Integer, CL_Pokemon> agentToPokemon = new HashMap<>();
 
     public static void main(String[] t) {
         Thread server = new Thread(new Ex2());
         server.start();
-        Thread client = new Thread(new MyPanel());
+        Thread client =  new Thread(new MyPanel());
         client.start();
     }
 
     @Override
     public void run () {
-        int scenario_num = 23;
+        int scenario_num = 0;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
         initGame(game);
-
         game.startGame();
-
         while (game.isRunning()) {
-            moveAgents(game, gameGraph);
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
+                moveAgents(game, gameGraph);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -100,6 +98,7 @@ public class Ex2 implements Runnable {
             for (int i = 0; i < agentNumber; i++) {
                 game.addAgent(pokemons.get(i).get_edge().getSrc());
                 agentToPokemon.put(i, pokemons.get(i));
+                game.chooseNextEdge(i,pokemons.get(i).get_edge().getSrc());
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -126,8 +125,8 @@ public class Ex2 implements Runnable {
                     break;
                 }
             }
-            if (!isAfter && shortestPathDist > graphAlgo.shortestPathDist(pokemon.get_edge().getSrc(),currAgent.getSrcNode())) {
-                shortestPathDist = graphAlgo.shortestPathDist(pokemon.get_edge().getSrc(),currAgent.getSrcNode());
+            if (!isAfter && shortestPathDist > graphAlgo.shortestPathDist(pokemon.get_edge().getSrc(), currAgent.getSrcNode())) {
+                shortestPathDist = graphAlgo.shortestPathDist(pokemon.get_edge().getSrc(), currAgent.getSrcNode());
                 closestPokemon = pokemon;
             }
         }
@@ -145,12 +144,11 @@ public class Ex2 implements Runnable {
         List<CL_Pokemon> pokemons = Arena.json2Pokemons(game.getPokemons());
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
         arena = new Arena();
+        frame = new JFrame();
         arena.setGraph(gameGraph);
         arena.setPokemons(pokemons);
-        panel = new MyPanel();
         panel.setSize(1000, 700);
         panel.update(arena);
-        panel.run();
         frame.add(panel);
         frame.setSize(1000,700);
         frame.setResizable(true);

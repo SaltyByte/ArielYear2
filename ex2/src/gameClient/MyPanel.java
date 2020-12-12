@@ -33,6 +33,7 @@ public class MyPanel extends JPanel implements Runnable  {
 
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         int w = this.getWidth();
         int h = this.getHeight();
         g.clearRect(0, 0, w, h);
@@ -91,9 +92,9 @@ public class MyPanel extends JPanel implements Runnable  {
             int r=8;
             i++;
             if(c!=null) {
-
                 geo_location fp = this.point.world2frame(c);
                 g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+                g.drawString(""+(i-1), (int)fp.x(), (int)fp.y()-4*r);
             }
         }
     }
@@ -126,8 +127,12 @@ public class MyPanel extends JPanel implements Runnable  {
      * @see Thread#run()
      */
 
-    @Override
-    public void  run() {
 
+    @Override
+    public void run() {
+        while(true) {
+            System.out.println("Run");
+            repaint();
+        }
     }
 }
