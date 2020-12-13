@@ -3,6 +3,7 @@ package api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ import com.google.gson.JsonParseException;
 public class DWGraph_Algo implements dw_graph_algorithms {
 
 	private directed_weighted_graph graph;
-	private HashMap<Integer, TagWeight> tags;
+	// HashMap that holds for each node the information gathered by the Dijkstra algorithm 
+	private HashMap<Integer, DijkstraNodeInfo> dijkstraNodeMap;
 
 	/**
 	 * Init the graph on which this set of algorithms operates on.
@@ -60,7 +62,9 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 */
 	@Override
 	public directed_weighted_graph copy() {
+		// If this graph is not null, then copy
 		if (this.graph != null) {
+			// Using deep copy constructor in DWGraph_DS class
 			return new DWGraph_DS(this.graph);
 
 		}
@@ -70,16 +74,25 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	/**
 	 * Returns true if and only if there is a valid path from each node to each
 	 * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
+	 * If graph is null or size of nodes in the graph is zero or equals to one, then graph is connected.
+	 * This function uses Dijkstra algorithm to gather information about each node
+	 * by passing all the nodes in the graph. 
 	 * @return boolean - true if graph is strongly connected and false if not connected
 	 */
 	@Override
 	public boolean isConnected() {
+		// If this graph is null, then return true,
+		// If the graph contains no nodes or contains only one node
+		// it means the graph is connected, then return true
 		if (graph == null || graph.getV().size() <= 1) {
 			return true;
 		}
+		// Loop over the nodes in the graph
 		for (node_data node : graph.getV()) {
-			Dijkstra(node.getKey(),null);
-			if (tags.size() != graph.nodeSize()){
+			// Use the private function Dijkstra to save all sum weights that were passed through in the HashMap
+			Dijkstra(node.getKey(), null);
+			// If the amount of nodes in the graph is not equal to the amount in the HashMap, then the graph is not connected
+			if (dijkstraNodeMap.size() != graph.nodeSize()) {
 				return false;
 			}
 		}
@@ -95,17 +108,23 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 */
 	@Override
 	public double shortestPathDist(int src, int dest) {
+		//  If the graph is null or src or dest are not in the graph, then return -1
 		if (graph == null || graph.getNode(src) == null || graph.getNode(dest) == null){
 			return -1;
 		}
+		//  If src and dest are equal, then return 0 - in this case, the shortest path distance is 0
 		if (src == dest) {
 			return 0;
 		}
+		// Using Dijkstra algorithm to find the shortest path according to the weight from src to dest
 		Dijkstra(src,dest);
-		if (!tags.containsKey(dest)) {
+		// If the hashMap does not contain the dest key, then it did not reach the dest node,
+		// then return -1
+		if (!dijkstraNodeMap.containsKey(dest)) {
 			return -1;
 		}
-		return tags.get(dest).getSumWeight();
+		// Returns the sum of the weights from dest node which was set to the shortest distance from src
+		return dijkstraNodeMap.get(dest).getSumWeight();
 	}
 
 	/**
@@ -118,59 +137,77 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
+		// If the distance of the shortest path is equal to -1, then there is no path,
+		// or if the graph is empty, then return null
 		if (shortestPathDist(src, dest) == -1 || graph.getV().isEmpty()) {
 			return null;
 		}
+		// List of nodes of the shortest path
 		List<node_data> list = new ArrayList<>();
+		//  If src and dest are equal, then return the path with the one node
 		if (src == dest) {
 			list.add(graph.getNode(src));
 			return list;
 		}
+
+		// Add the dest node to the list
 		node_data destNode = graph.getNode(dest);
 		list.add(destNode);
 		boolean finished = false;
 		int nextNodeIndex = 0;
-		// while loop, adds shortest path from dest to src
+		// While loop, adds shortest path from dest -> src
 		while (!finished) {
+			// Get the next node data from the list
 			node_data node = list.get(nextNodeIndex);
-			list.add(tags.get(node.getKey()).getParent());
+			// Add the parent to the list and increment the index
+			list.add(dijkstraNodeMap.get(node.getKey()).getParent());
 			nextNodeIndex++;
+			// If reached the src node, then we have all the nodes from dest to src and we can end the loop
 			if(list.get(list.size() - 1) == graph.getNode(src)){
 				finished = true;
 			}
 		}
+		// Using reverse function from collections, because we want the list to be from src -> dest
 		Collections.reverse(list);
 		return list;
 	}
 
 	/** 
-	 * Private function that uses Dijkstra algorithm to find the shortest path
-	 * according to the weight.
-	 * @param int src - starting node
+	 * Private function that uses Dijkstra algorithm from src to dest nodes and for each node it saves
+	 * the minimum sum weight and its parent calculated from src.
+	 * @param Integer src - starting node
 	 * @param Integer dest - end (target) node
 	 */
-	private void Dijkstra(int src, Integer dest) {
-		tags = new HashMap<>();
-
+	private void Dijkstra(Integer src, Integer dest) {
+		dijkstraNodeMap = new HashMap<>();
+		// This priority queue is used for the Dijkstra algorithm, its priority is sorted according to the weights
+		Queue<node_data> queue = new PriorityQueue<>(new WeightComparator());
+		// Add the src node to the queue
 		node_data nodeSrc = graph.getNode(src);
-		Queue<node_data> q = new PriorityQueue<>(new WeightComparator());
-		q.add(nodeSrc);
-		TagWeight tag = new TagWeight(null, 0);
-		tags.put(src, tag);
-		while (!q.isEmpty()) {
-			node_data node = q.poll();
+		queue.add(nodeSrc);
+		// Create DijkstraNodeInfo instance that holds the src (with sum weight of 0) node info and put it in the map
+		dijkstraNodeMap.put(src, new DijkstraNodeInfo(0, null));
+
+		// Loop while queue is not empty
+		while (!queue.isEmpty()) {
+			// Get the node with the lowest weight from the priority queue
+			node_data node = queue.poll();
+			// Loop over all the edges of this node
 			for (edge_data edge : graph.getE(node.getKey())) {
-				double sumWeight = edge.getWeight() + tags.get(node.getKey()).getSumWeight();
+				// Calculate the sum weight by adding to the current weight of the edge to the previous sum weight
+				double sumWeight = edge.getWeight() + dijkstraNodeMap.get(node.getKey()).getSumWeight();
 				node_data neighbor = graph.getNode(edge.getDest());
-				if (!tags.containsKey(neighbor.getKey()) && !q.contains(neighbor)) {
-					TagWeight t = new TagWeight(node, sumWeight);
-					tags.put(edge.getDest(), t);
-					q.add(neighbor);
+				// Check if the neighbor does not exists in the map and the queue
+				if (!dijkstraNodeMap.containsKey(neighbor.getKey()) && !queue.contains(neighbor)) {
+					// Add the neighbor to the map and to the queue
+					dijkstraNodeMap.put(edge.getDest(), new DijkstraNodeInfo(sumWeight, node));
+					queue.add(neighbor);
 				}
-				else if (sumWeight < tags.get(edge.getDest()).getSumWeight()) {
-					TagWeight t = new TagWeight(node, sumWeight);
-					tags.put(edge.getDest(), t);
+				// If the neighbor already exists in the map and the sumWeight is lower, then replace it in the map
+				else if (sumWeight < dijkstraNodeMap.get(edge.getDest()).getSumWeight()) {
+					dijkstraNodeMap.put(edge.getDest(), new DijkstraNodeInfo(sumWeight, node));
 				}
+				// If the current node is equal to dest then return
 				if (dest != null && node.getKey() == dest){
 					return;
 				}
@@ -186,17 +223,18 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	 */
 	@Override
 	public boolean save(String file) {
+		// Create JSON string from the graph
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(this.graph);	
-		// Write JSON to file
 		try
 		{
+			// Write graph object which is in JSON format
 			PrintWriter pw = new PrintWriter(new File(file));
 			pw.write(json);
+			// Close PrintWriter
 			pw.close();
 		} 
-		catch (FileNotFoundException e) 
-		{
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -215,31 +253,42 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	public boolean load(String file) {
 		try 
 		{
+			// Create GsonBuilder
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gsonBuilder.setLenient();
+			// Register interfaces to classes so the GSON builder can use its constructors
 			gsonBuilder.registerTypeAdapter(node_data.class, new InterfaceAdapter<>(NodeData.class));
 			gsonBuilder.registerTypeAdapter(edge_data.class, new InterfaceAdapter<>(EdgeData.class));
-			
+			// Create Gson from GsonBuilder
 			Gson gson = gsonBuilder.create();
+			// Read from JSON string to create the graph
 			FileReader reader = new FileReader(file);
-			this.graph = gson.fromJson(reader, DWGraph_DS.class);	
-			System.out.println(this.graph);
+			this.graph = gson.fromJson(reader, DWGraph_DS.class);
+			// Close FileReader
+			reader.close();
 		} 
-		catch (FileNotFoundException e) {
+		catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 
+	/**
+	 * This private class implements JsonDeserializer interface with generic type,
+	 * This is needed for the GsonBuilder to be able to deserialize interfaces.
+	 */
 	private class InterfaceAdapter<T> implements JsonDeserializer<T> {
 
+		// Class that implements the interface
 		private Class<T> targetClass;
 
+		// Constructor
 		public InterfaceAdapter(Class<T> targetClass) {
 			this.targetClass = targetClass;
 		}
 
+		// Override the deserialize method, so that the targetClass will be used to as a constructor for the interface
 		@Override
 		public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			return context.deserialize(json.getAsJsonObject(), targetClass);
@@ -262,8 +311,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 		 */
 		@Override
 		public int compare(node_data node1, node_data node2) {
-			double sum1 = tags.get(node1.getKey()).getSumWeight();
-			double sum2 = tags.get(node2.getKey()).getSumWeight();
+			double sum1 = dijkstraNodeMap.get(node1.getKey()).getSumWeight();
+			double sum2 = dijkstraNodeMap.get(node2.getKey()).getSumWeight();
 			if (sum1 > sum2) {
 				return 1;
 			} else if (sum1 <sum2) {
@@ -273,14 +322,21 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 		}
 	}
 
-	private class TagWeight {
+	/**
+	 * This private class represents node information gathered by the Dijkstra algorithm.
+	 */
+	private class DijkstraNodeInfo {
+		// The sum weight from src to this node
 		private double sumWeight;
+		// The parent of this node from src
 		private node_data parent;
 
-		public TagWeight(node_data parent, double sumWeight){
+		// Constructor
+		public DijkstraNodeInfo(double sumWeight, node_data parent) {
 			this.parent = parent;
 			this.sumWeight = sumWeight;
 		}
+
 		public double getSumWeight(){
 			return sumWeight;
 		}
