@@ -26,7 +26,7 @@ public class Ex2 implements Runnable {
 
     @Override
     public void run() {
-        int scenario_num = 14;
+        int scenario_num = 0;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
@@ -34,19 +34,8 @@ public class Ex2 implements Runnable {
         game.startGame();
         while (game.isRunning()) {
             arena.setTime(game.timeToEnd());
-            frame.repaint();
-            String jsonAgents = game.getAgents();
-            List<CL_Agent> agentList = Arena.getAgents(jsonAgents, gameGraph);
             moveAgents(game, gameGraph);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {
-            }
-            for (CL_Agent agent : agentList) {
-                if (agent.getNextNode() == -1) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+
         }
         System.out.println(game.toString());
         System.exit(0);
@@ -62,31 +51,66 @@ public class Ex2 implements Runnable {
             Arena.updateEdge(pokemon, gameGraph);
         }
         arena.setPokemons(pokemonList);
-        game.move();
         for (CL_Agent agent : agentList) {
-            int dest = agent.getNextNode();
+            geo_location agentLocation = agent.getLocation();
             int src = agent.getSrcNode();
             int id = agent.getID();
-            if (dest == -1) {
-                edge_data toEdge = bestNextEdge(pokemonList, agentList, agent, gameGraph);
-                int toNode = nextNode(gameGraph, src, toEdge.getSrc());
-                if (src == toEdge.getSrc()) {
-                    toNode = toEdge.getDest();
+            edge_data toEdge = bestNextEdge(pokemonList, agentList, agent, gameGraph);
+            CL_Pokemon toPokemon = getClosestPokemon(pokemonList,agent,gameGraph,agentList);
+            node_data toNode = nextNode(gameGraph, src, toEdge.getSrc());
+            game.chooseNextEdge(id, toNode.getKey());
+            if (toPokemon.get_edge().getSrc() == toNode.getKey()) {
+                geo_location pokemonLocation = toPokemon.getLocation();
+                double timeToSleep = (pokemonLocation.distance(toNode.getLocation()) / agent.getSpeed()) * 1000;
+                try {
+                    Thread.sleep((long) timeToSleep);
+                } catch (InterruptedException ignored) {
                 }
-                game.chooseNextEdge(id, toNode);
-                System.out.println("Agent:(" + id + ") " + "score: " + agent.getValue() + " Moving from node: " + src + " to node: " + toNode + " Speed: " + agent.getSpeed() + " at edge: " + agentToPokemon.get(agent.getID()));
             }
+            double timeToSleep = (agentLocation.distance(toNode.getLocation()) / agent.getSpeed()) * 1000;
+            try {
+                Thread.sleep((long) timeToSleep);
+            } catch (InterruptedException ignored) {
+            }
+            frame.repaint();
+            game.move();
         }
     }
 
-    private static int nextNode(directed_weighted_graph graph, int src, int dest) {
+
+//        String jsonAgents = game.getAgents();
+//        List<CL_Agent> agentList = Arena.getAgents(jsonAgents, gameGraph);
+//        arena.setAgents(agentList);
+//        List<CL_Pokemon> pokemonList = Arena.json2Pokemons(game.getPokemons());
+//        for (CL_Pokemon pokemon : pokemonList) {
+//            Arena.updateEdge(pokemon, gameGraph);
+//        }
+//        arena.setPokemons(pokemonList);
+//        game.move();
+//        for (CL_Agent agent : agentList) {
+//            int dest = agent.getNextNode();
+//            int src = agent.getSrcNode();
+//            int id = agent.getID();
+//            if (dest == -1) {
+//                edge_data toEdge = bestNextEdge(pokemonList, agentList, agent, gameGraph);
+//                int toNode = nextNode(gameGraph, src, toEdge.getSrc());
+//                if (src == toEdge.getSrc()) {
+//                    toNode = toEdge.getDest();
+//                }
+//                game.chooseNextEdge(id, toNode);
+//                System.out.println("Agent:(" + id + ") " + "score: " + agent.getValue() + " Moving from node: " + src + " to node: " + toNode + " Speed: " + agent.getSpeed() + " at edge: " + agentToPokemon.get(agent.getID()));
+//            }
+//        }
+//}
+
+    private static node_data nextNode(directed_weighted_graph graph, int src, int dest) {
         dw_graph_algorithms algoGraph = new DWGraph_Algo();
         algoGraph.init(graph);
         List<node_data> shortestPath = algoGraph.shortestPath(src, dest);
         if (shortestPath.size() == 1) {
-            return shortestPath.get(0).getKey();
+            return shortestPath.get(0);
         }
-        return shortestPath.get(1).getKey();
+        return shortestPath.get(1);
     }
 
     private static void insertAgents(game_service game, directed_weighted_graph gameGraph) {
@@ -165,51 +189,51 @@ public class Ex2 implements Runnable {
 
     }
 
-    private static class GraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
-        @Override
-        public DWGraph_DS deserialize(JsonElement json, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
-            JsonObject jsonObject = json.getAsJsonObject();
-            JsonArray edges = jsonObject.get("Edges").getAsJsonArray();
-            JsonArray nodes = jsonObject.get("Nodes").getAsJsonArray();
-            DWGraph_DS graph = new DWGraph_DS();
-            for (JsonElement node : nodes) {
-                node_data n = new NodeData(node.getAsJsonObject().get("id").getAsInt());
-                String pos = node.getAsJsonObject().get("pos").getAsString();
-                String[] posString = pos.split(",");
-                geo_location location = new GeoLocation(Double.parseDouble(posString[0]), Double.parseDouble(posString[1]), Double.parseDouble(posString[2]));
-                n.setLocation(location);
-                graph.addNode(n);
-            }
-            for (JsonElement edge : edges) {
-                int src = edge.getAsJsonObject().get("src").getAsInt();
-                int dest = edge.getAsJsonObject().get("dest").getAsInt();
-                double weight = edge.getAsJsonObject().get("w").getAsDouble();
-                graph.connect(src, dest, weight);
-            }
-            return graph;
+private static class GraphJsonDeserializer implements JsonDeserializer<DWGraph_DS> {
+    @Override
+    public DWGraph_DS deserialize(JsonElement json, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
+        JsonObject jsonObject = json.getAsJsonObject();
+        JsonArray edges = jsonObject.get("Edges").getAsJsonArray();
+        JsonArray nodes = jsonObject.get("Nodes").getAsJsonArray();
+        DWGraph_DS graph = new DWGraph_DS();
+        for (JsonElement node : nodes) {
+            node_data n = new NodeData(node.getAsJsonObject().get("id").getAsInt());
+            String pos = node.getAsJsonObject().get("pos").getAsString();
+            String[] posString = pos.split(",");
+            geo_location location = new GeoLocation(Double.parseDouble(posString[0]), Double.parseDouble(posString[1]), Double.parseDouble(posString[2]));
+            n.setLocation(location);
+            graph.addNode(n);
         }
-    }
-
-    private static class ValueComparator implements Comparator<CL_Pokemon> {
-
-        /**
-         * Overrides compare method by tag (weight), if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
-         * used in the priorityQueue.
-         *
-         * @param pokemon1 to compare
-         * @param pokemon2 to compare
-         * @return - int if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
-         */
-        @Override
-        public int compare(CL_Pokemon pokemon1, CL_Pokemon pokemon2) {
-            if (pokemon1.getValue() > pokemon2.getValue()) {
-                return -1;
-            } else if (pokemon1.getValue() < pokemon2.getValue()) {
-                return 1;
-            }
-            return 0;
+        for (JsonElement edge : edges) {
+            int src = edge.getAsJsonObject().get("src").getAsInt();
+            int dest = edge.getAsJsonObject().get("dest").getAsInt();
+            double weight = edge.getAsJsonObject().get("w").getAsDouble();
+            graph.connect(src, dest, weight);
         }
+        return graph;
     }
+}
+
+private static class ValueComparator implements Comparator<CL_Pokemon> {
+
+    /**
+     * Overrides compare method by tag (weight), if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+     * used in the priorityQueue.
+     *
+     * @param pokemon1 to compare
+     * @param pokemon2 to compare
+     * @return - int if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+     */
+    @Override
+    public int compare(CL_Pokemon pokemon1, CL_Pokemon pokemon2) {
+        if (pokemon1.getValue() > pokemon2.getValue()) {
+            return -1;
+        } else if (pokemon1.getValue() < pokemon2.getValue()) {
+            return 1;
+        }
+        return 0;
+    }
+}
 }
 
 
