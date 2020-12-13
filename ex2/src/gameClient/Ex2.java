@@ -17,29 +17,35 @@ public class Ex2 implements Runnable {
     private static MyPanel panel = new MyPanel();
     private static JFrame frame;
     private static Arena arena;
-    private static HashMap<Integer, CL_Pokemon> agentToPokemon = new HashMap<>();
+    private static HashMap<Integer, Integer> agentToPokemon = new HashMap<>();
 
     public static void main(String[] t) {
         Thread server = new Thread(new Ex2());
         server.start();
-        Thread client =  new Thread(new MyPanel());
-        client.start();
     }
 
     @Override
-    public void run () {
-        int scenario_num = 0;
+    public void run() {
+        int scenario_num = 14;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
         initGame(game);
         game.startGame();
         while (game.isRunning()) {
+            arena.setTime(game.timeToEnd());
+            frame.repaint();
+            String jsonAgents = game.getAgents();
+            List<CL_Agent> agentList = Arena.getAgents(jsonAgents, gameGraph);
+            moveAgents(game, gameGraph);
             try {
                 Thread.sleep(100);
-                moveAgents(game, gameGraph);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
+            }
+            for (CL_Agent agent : agentList) {
+                if (agent.getNextNode() == -1) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         System.out.println(game.toString());
@@ -68,7 +74,7 @@ public class Ex2 implements Runnable {
                     toNode = toEdge.getDest();
                 }
                 game.chooseNextEdge(id, toNode);
-                System.out.println("Agent:(" + id + ") " + "score: " + agent.getValue() + " Moving from node: " + src + " to node: " + toNode + " Speed: " + agent.getSpeed() + " at edge: " + agentToPokemon.get(agent.getID()).get_edge());
+                System.out.println("Agent:(" + id + ") " + "score: " + agent.getValue() + " Moving from node: " + src + " to node: " + toNode + " Speed: " + agent.getSpeed() + " at edge: " + agentToPokemon.get(agent.getID()));
             }
         }
     }
@@ -97,8 +103,8 @@ public class Ex2 implements Runnable {
             int agentNumber = gameJsonServer.getInt("agents");
             for (int i = 0; i < agentNumber; i++) {
                 game.addAgent(pokemons.get(i).get_edge().getSrc());
-                agentToPokemon.put(i, pokemons.get(i));
-                game.chooseNextEdge(i,pokemons.get(i).get_edge().getSrc());
+                agentToPokemon.put(i, pokemons.get(i).get_edge().getSrc());
+                game.chooseNextEdge(i, pokemons.get(i).get_edge().getSrc());
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -107,7 +113,7 @@ public class Ex2 implements Runnable {
 
     private static edge_data bestNextEdge(List<CL_Pokemon> pokemons, List<CL_Agent> agents, CL_Agent currAgent, directed_weighted_graph gameGraph) {
         CL_Pokemon pokemon = getClosestPokemon(pokemons, currAgent, gameGraph, agents);
-        agentToPokemon.put(currAgent.getID(),pokemon);
+        agentToPokemon.put(currAgent.getID(), pokemon.get_edge().getSrc());
         return pokemon.get_edge();
     }
 
@@ -120,7 +126,7 @@ public class Ex2 implements Runnable {
         for (CL_Pokemon pokemon : pokemons) {
             boolean isAfter = false;
             for (CL_Agent agent : agents) {
-                if (agentToPokemon.get(agent.getID()).get_edge().getSrc() == pokemon.get_edge().getSrc() && currAgent != agent) {
+                if (agentToPokemon.get(agent.getID()) == pokemon.get_edge().getSrc() && currAgent != agent) {
                     isAfter = true;
                     break;
                 }
@@ -150,7 +156,7 @@ public class Ex2 implements Runnable {
         panel.setSize(1000, 700);
         panel.update(arena);
         frame.add(panel);
-        frame.setSize(1000,700);
+        frame.setSize(1000, 700);
         frame.setResizable(true);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);

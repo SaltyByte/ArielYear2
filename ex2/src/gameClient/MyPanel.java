@@ -1,19 +1,17 @@
 package gameClient;
 
 
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.geo_location;
-import api.node_data;
+import api.*;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class MyPanel extends JPanel implements Runnable  {
+public class MyPanel extends JPanel {
     private Arena arena;
     private gameClient.util.Range2Range point;
 
@@ -28,7 +26,6 @@ public class MyPanel extends JPanel implements Runnable  {
         Range2D frame = new Range2D(rx, ry);
         directed_weighted_graph g = arena.getGraph();
         point = Arena.w2f(g, frame);
-
     }
 
     @Override
@@ -42,6 +39,8 @@ public class MyPanel extends JPanel implements Runnable  {
         drawGraph(g);
         drawAgants(g);
         drawInfo(g);
+        drawScores(g);
+        drawTimer(g);
     }
 
     private void drawInfo(Graphics g) {
@@ -114,25 +113,20 @@ public class MyPanel extends JPanel implements Runnable  {
         geo_location d0 = this.point.world2frame(d);
         g.drawLine((int)s0.x(), (int)s0.y(), (int)d0.x(), (int)d0.y());
     }
-
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
-
-
-    @Override
-    public void run() {
-        while(true) {
-            System.out.println("Run");
-            repaint();
+    private void drawScores (Graphics g) {
+        List<CL_Agent> agents = arena.getAgents();
+        int indexY = 0;
+        for (CL_Agent agent : agents) {
+            g.setColor(Color.BLACK);
+            g.setFont(new java.awt.Font("Century Schoolbook L", 2, 24));
+            g.drawString("Agent Number :(" + agent.getID() + "). Score is: " ,500,100+indexY);
+            g.drawString(""+agent.getValue(),850,100+indexY);
+            indexY+= 30;
         }
+    }
+    private void drawTimer(Graphics g) {
+        long time = arena.getTime();
+        g.setColor(Color.BLACK);
+        g.drawString("Time left: " + time/1000,100,100);
     }
 }

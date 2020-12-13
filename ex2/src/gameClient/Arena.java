@@ -27,6 +27,7 @@ public class Arena {
 	private List<CL_Agent> _agents;
 	private List<CL_Pokemon> _pokemons;
 	private List<String> _info;
+	private long time;
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
 
@@ -173,6 +174,12 @@ public class Arena {
 		Range2D world = GraphRange(g);
 		Range2Range ans = new Range2Range(world, frame);
 		return ans;
+	}
+	public void setTime(long time){
+		this.time = time;
+	}
+	public long getTime() {
+		return this.time;
 	}
 
 }
