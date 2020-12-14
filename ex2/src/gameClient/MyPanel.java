@@ -5,15 +5,26 @@ import api.*;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
-public class MyPanel extends JPanel {
+
+public class MyPanel extends JPanel implements ActionListener {
     private Arena arena;
     private gameClient.util.Range2Range point;
+    private Timer timer;
+
+    public MyPanel(){
+        timer = new Timer(10,this);
+        timer.start();
+    }
 
     public void update(Arena ar) {
         this.arena = ar;
@@ -43,11 +54,26 @@ public class MyPanel extends JPanel {
         drawTimer(g);
     }
 
+
+
     private void drawInfo(Graphics g) {
         List<String> str = arena.get_info();
-        String dt = "none";
-        for (int i = 0; i < str.size(); i++) {
-            g.drawString(str.get(i) + " dt: " + dt, 100, 60 + i * 20);
+        String gameString = str.get(0);
+        JSONObject gameJsonObject;
+        try {
+            gameJsonObject = new JSONObject(gameString);
+            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
+            int pokemons = gameJsonServer.getInt("pokemons");
+            int moves = gameJsonServer.getInt("moves");
+            int grade = gameJsonServer.getInt("grade");
+            g.setFont(new java.awt.Font("Century Schoolbook L", 2, 20));
+            g.setColor(Color.BLACK);
+            g.drawString("Pokemons on graph : " + pokemons, 200,50);
+            g.drawString("Moves : " + moves, 500,50);
+            g.drawString("Total Grade: " + grade, 200,100);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -118,15 +144,20 @@ public class MyPanel extends JPanel {
         int indexY = 0;
         for (CL_Agent agent : agents) {
             g.setColor(Color.BLACK);
-            g.setFont(new java.awt.Font("Century Schoolbook L", 2, 24));
             g.drawString("Agent Number :(" + agent.getID() + "). Score is: " ,500,100+indexY);
-            g.drawString(""+agent.getValue(),850,100+indexY);
+            g.drawString(""+agent.getValue(),780,100+indexY);
             indexY+= 30;
         }
     }
     private void drawTimer(Graphics g) {
         long time = arena.getTime();
+        g.setFont(new java.awt.Font("Century Schoolbook L", 2, 15));
         g.setColor(Color.BLACK);
-        g.drawString("Time left: " + time/1000,100,100);
+        g.drawString("Time left: " + time/1000,10,30);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        repaint();
     }
 }
