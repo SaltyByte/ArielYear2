@@ -59,8 +59,8 @@ public class Ex2 implements Runnable {
         try {
             for (CL_Agent agent : agentList) {
 //                int time = (int)game.timeToEnd() / 1000;
-//                int agentSize = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
-                int agentSize = agentList.size();
+//                int calcMoveSeed = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
+                int calcMoveSeed = agentList.size();
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
@@ -77,7 +77,7 @@ public class Ex2 implements Runnable {
                     double distanceToPokemon = nextNode.getLocation().distance(pokemon.getLocation());
                     double pokemonDiffOnEdge = distanceToPokemon / edgeDistance;
                     double pokemonLocation = pokemonDiffOnEdge * toEdge.getWeight();
-                    agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * agentSize);
+                    agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * calcMoveSeed);
                     lastLocation.put(id, pokemon);
                 } else if (agentToPokemon.get(id) != agent.getSrcNode() && lastLocation.get(id).get_edge().getSrc() == agent.getSrcNode()) {
                     game.chooseNextEdge(id, nextNode.getKey());
@@ -85,7 +85,7 @@ public class Ex2 implements Runnable {
                     double distanceFromPokemon = destNode.getLocation().distance(lastLocation.get(id).getLocation());
                     double pokemonDiffOnEdge = distanceFromPokemon / edgeDistance;
                     double pokemonLocation = pokemonDiffOnEdge * toEdge.getWeight();
-                    agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * agentSize);
+                    agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * calcMoveSeed);
                 } else {
                     game.chooseNextEdge(id, nextNode.getKey());
                     edge_data currEdge = gameGraph.getEdge(agent.getSrcNode(), nextNode.getKey());
