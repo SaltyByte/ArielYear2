@@ -58,8 +58,9 @@ public class Ex2 implements Runnable {
         long timeToWait = Long.MAX_VALUE;
         try {
             for (CL_Agent agent : agentList) {
-                int time = (int)game.timeToEnd() / 1000;
-                int agentSize = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
+//                int time = (int)game.timeToEnd() / 1000;
+//                int agentSize = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
+                int agentSize = agentList.size();
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
