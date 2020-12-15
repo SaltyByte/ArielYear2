@@ -115,24 +115,26 @@ public class MyPanel extends JPanel implements ActionListener {
     private void drawAgants(Graphics g) {
         List<CL_Agent> agents = arena.getAgents();
         List<String> str = arena.get_info();
-        String gameString = str.get(0);
-        JSONObject gameJsonObject;
-        try {
-            gameJsonObject = new JSONObject(gameString);
-            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
-            int agentNumber = gameJsonServer.getInt("agents");
-            g.setColor(Color.red);
-            for (int i = 0; i < agentNumber; i++) {
-                geo_location c = agents.get(i).getLocation();
-                int r = 8;
-                if (c != null) {
-                    geo_location fp = this.point.world2frame(c);
-                    g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-                    g.drawString("" + (i), (int) fp.x(), (int) fp.y() - 4 * r);
+        if (str.get(0) != null) {
+            String gameString = str.get(0);
+            JSONObject gameJsonObject;
+            try {
+                gameJsonObject = new JSONObject(gameString);
+                JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
+                int agentNumber = gameJsonServer.getInt("agents");
+                g.setColor(Color.red);
+                for (int i = 0; i < agentNumber; i++) {
+                    geo_location c = agents.get(i).getLocation();
+                    int r = 8;
+                    if (c != null) {
+                        geo_location fp = this.point.world2frame(c);
+                        g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+                        g.drawString("" + (i), (int) fp.x(), (int) fp.y() - 4 * r);
+                    }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 

@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
-import java.awt.*;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +21,6 @@ public class Ex2 implements Runnable {
     private static Arena arena;
     private static HashMap<Integer, Integer> agentToPokemon = new HashMap<>();
     private static HashMap<Integer, CL_Pokemon> lastLocation = new HashMap<>();
-    private static HashMap<Integer, geo_location> agentLastLocation = new HashMap<>();
 
     public static void main(String[] t) {
         Thread server = new Thread(new Ex2());
@@ -30,7 +29,7 @@ public class Ex2 implements Runnable {
 
     @Override
     public void run() {
-        int scenario_num = 11;
+        int scenario_num = 0;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
@@ -58,11 +57,20 @@ public class Ex2 implements Runnable {
         }
         arena.setPokemons(pokemonList);
         long timeToWait = Long.MAX_VALUE;
+        int time;
         try {
+            if (agentList.size() == 1) {
+                time = 50;
+            }
+            else if (agentList.size() == 2) {
+                time = 67;
+            }
+            else {
+                time = 75;
+            }
+
             for (CL_Agent agent : agentList) {
-//                int time = (int)game.timeToEnd() / 1000;
-//                int calcMoveSpeed = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
-                int calcMoveSpeed = (int)(agentList.size() * agent.getSpeed() * 70);
+                int calcMoveSpeed = (int)(agentList.size() * agent.getSpeed() * time);
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
@@ -85,7 +93,7 @@ public class Ex2 implements Runnable {
                 } else if (agent.getNextNode() != lastLocation.get(id).get_edge().getDest()) {
                     game.chooseNextEdge(id, nextNode.getKey());
                     geo_location agentLocation = agent.getLocation();
-                    if (agentLocation.distance(gameGraph.getNode(agent.getSrcNode()).getLocation()) < 0.00001) {
+                    if (agentLocation.distance(gameGraph.getNode(agent.getSrcNode()).getLocation()) < 0.0001) {
                         edge_data currEdge = gameGraph.getEdge(agent.getSrcNode(), nextNode.getKey());
                         agentTTW = (long) ((currEdge.getWeight() / agent.getSpeed()) * 1000);
                     }
