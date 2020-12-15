@@ -21,6 +21,7 @@ public class Ex2 implements Runnable {
     private static Arena arena;
     private static HashMap<Integer, Integer> agentToPokemon = new HashMap<>();
     private static HashMap<Integer, CL_Pokemon> lastLocation = new HashMap<>();
+    private static HashMap<Integer, geo_location> agentLastLocation = new HashMap<>();
 
     public static void main(String[] t) {
         Thread server = new Thread(new Ex2());
@@ -61,7 +62,7 @@ public class Ex2 implements Runnable {
             for (CL_Agent agent : agentList) {
 //                int time = (int)game.timeToEnd() / 1000;
 //                int calcMoveSpeed = (int)((time / agentList.size()) / agent.getSpeed()) * 10;
-                int calcMoveSpeed = (int)((agentList.size() * 35) * agent.getSpeed());
+                int calcMoveSpeed = (int)(agentList.size() * agent.getSpeed() * 70);
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
@@ -83,34 +84,25 @@ public class Ex2 implements Runnable {
                     lastLocation.put(id, pokemon);
                 } else if (agent.getNextNode() != lastLocation.get(id).get_edge().getDest()) {
                     game.chooseNextEdge(id, nextNode.getKey());
-                    edge_data currEdge = gameGraph.getEdge(agent.getSrcNode(), nextNode.getKey());
-                    agentTTW = (long) ((currEdge.getWeight() / agent.getSpeed()) * 1000);
+                    geo_location agentLocation = agent.getLocation();
+                    if (agentLocation.distance(gameGraph.getNode(agent.getSrcNode()).getLocation()) < 0.00001) {
+                        edge_data currEdge = gameGraph.getEdge(agent.getSrcNode(), nextNode.getKey());
+                        agentTTW = (long) ((currEdge.getWeight() / agent.getSpeed()) * 1000);
+                    }
+                    else {
+                        double edgeDistance = gameGraph.getNode(agent.getSrcNode()).getLocation().distance(destNode.getLocation());
+                        double distanceFromAgent = destNode.getLocation().distance(agent.getLocation());
+                        double agentDiffOnEdge = distanceFromAgent / edgeDistance;
+                        double pokemonLocation = agentDiffOnEdge * toEdge.getWeight();
+                        agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * 1000);
+                    }
 
-//                    game.chooseNextEdge(id, nextNode.getKey());
-//                    double edgeDistance = lastLocation.get(id).getLocation().distance(destNode.getLocation());
-//                    double distanceFromPokemon = destNode.getLocation().distance(lastLocation.get(id).getLocation());
-//                    double pokemonDiffOnEdge = distanceFromPokemon / edgeDistance;
-//                    double pokemonLocation = pokemonDiffOnEdge * toEdge.getWeight();
-//                    agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * calcMoveSpeed);
                 } else {
                     double edgeDistance = lastLocation.get(id).getLocation().distance(destNode.getLocation());
                     double distanceFromPokemon = destNode.getLocation().distance(lastLocation.get(id).getLocation());
                     double pokemonDiffOnEdge = distanceFromPokemon / edgeDistance;
                     double pokemonLocation = pokemonDiffOnEdge * toEdge.getWeight();
                     agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * calcMoveSpeed);
-//                    game.chooseNextEdge(id, nextNode.getKey());
-//                    edge_data currEdge = gameGraph.getEdge(agent.getSrcNode(), nextNode.getKey());
-//                    agentTTW = (long) ((currEdge.getWeight() / agent.getSpeed()) * 1000);
-
-                    //(agentToPokemon.get(id) != agent.getSrcNode() && lastLocation.get(id).get_edge().getSrc() == agent.getSrcNode()) ->> if statement
-//                    game.chooseNextEdge(id, nextNode.getKey());
-//                    double edgeDistance = gameGraph.getNode(agent.getSrcNode()).getLocation().distance(destNode.getLocation());
-//                    double distanceFromAgent = destNode.getLocation().distance(agent.getLocation());
-//                    double AgentDiffOnEdge = distanceFromAgent / edgeDistance;
-//                    double AgentLocation = AgentDiffOnEdge * toEdge.getWeight();
-//                    agentTTW = (long) ((AgentLocation / agent.getSpeed()) * 1000);
-//                    game.chooseNextEdge(id, nextNode.getKey());
-
                 }
                 if (agentTTW < timeToWait) {
                     timeToWait = agentTTW;

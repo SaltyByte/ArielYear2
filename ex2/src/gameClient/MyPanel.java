@@ -21,8 +21,9 @@ public class MyPanel extends JPanel implements ActionListener {
     private gameClient.util.Range2Range point;
     private Timer timer;
 
-    public MyPanel(){
-        timer = new Timer(10,this);
+    public MyPanel() {
+        timer = new Timer(10, this);
+
         timer.start();
     }
 
@@ -54,7 +55,6 @@ public class MyPanel extends JPanel implements ActionListener {
     }
 
 
-
     private void drawInfo(Graphics g) {
         List<String> str = arena.get_info();
         String gameString = str.get(0);
@@ -65,18 +65,17 @@ public class MyPanel extends JPanel implements ActionListener {
             int pokemons = gameJsonServer.getInt("pokemons");
             int moves = gameJsonServer.getInt("moves");
             int grade = gameJsonServer.getInt("grade");
-            int level =  gameJsonServer.getInt("game_level");
+            int level = gameJsonServer.getInt("game_level");
             long time = arena.getTime();
-
 
 
             g.setFont(new java.awt.Font("Verdana", Font.BOLD, 15));
             g.setColor(Color.BLACK);
-            g.drawString("Pokemons on graph : " + pokemons, 200,30);
-            g.drawString("Moves : " + moves, 500,30);
-            g.drawString("Total Grade: " + grade, 200,50);
-            g.drawString("Level : " + level,10,50);
-            g.drawString("Time left: " + time/1000,10,30);
+            g.drawString("Pokemons on graph : " + pokemons, 200, 30);
+            g.drawString("Moves : " + moves, 500, 30);
+            g.drawString("Total Grade: " + grade, 200, 50);
+            g.drawString("Level : " + level, 10, 50);
+            g.drawString("Time left: " + time / 1000, 10, 30);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -115,47 +114,55 @@ public class MyPanel extends JPanel implements ActionListener {
 
     private void drawAgants(Graphics g) {
         List<CL_Agent> agents = arena.getAgents();
-        g.setColor(Color.red);
-        int i=0;
-        for(CL_Agent ignored : agents) {
-            geo_location c = agents.get(i).getLocation();
-            int r=8;
-            i++;
-            if(c!=null) {
-                geo_location fp = this.point.world2frame(c);
-                g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
-                g.drawString(""+(i-1), (int)fp.x(), (int)fp.y()-4*r);
+        List<String> str = arena.get_info();
+        String gameString = str.get(0);
+        JSONObject gameJsonObject;
+        try {
+            gameJsonObject = new JSONObject(gameString);
+            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
+            int agentNumber = gameJsonServer.getInt("agents");
+            g.setColor(Color.red);
+            for (int i = 0; i < agentNumber; i++) {
+                geo_location c = agents.get(i).getLocation();
+                int r = 8;
+                if (c != null) {
+                    geo_location fp = this.point.world2frame(c);
+                    g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+                    g.drawString("" + (i), (int) fp.x(), (int) fp.y() - 4 * r);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+        private void drawNode (node_data n,int r, Graphics g){
+            geo_location pos = n.getLocation();
+            geo_location fp = this.point.world2frame(pos);
+            g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
+            g.drawString("" + n.getKey(), (int) fp.x(), (int) fp.y() - 4 * r);
+        }
+
+        private void drawEdge (edge_data e, Graphics g){
+            directed_weighted_graph gg = arena.getGraph();
+            geo_location s = gg.getNode(e.getSrc()).getLocation();
+            geo_location d = gg.getNode(e.getDest()).getLocation();
+            geo_location s0 = this.point.world2frame(s);
+            geo_location d0 = this.point.world2frame(d);
+            g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
+        }
+        private void drawScores (Graphics g){
+            List<CL_Agent> agents = arena.getAgents();
+            int indexY = 0;
+            for (CL_Agent agent : agents) {
+                g.setColor(Color.BLACK);
+                g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), 700, 30 + indexY);
+                indexY += 20;
             }
         }
-    }
 
-    private void drawNode(node_data n, int r, Graphics g) {
-        geo_location pos = n.getLocation();
-        geo_location fp = this.point.world2frame(pos);
-        g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
-        g.drawString(""+n.getKey(), (int)fp.x(), (int)fp.y()-4*r);
-    }
-
-    private void drawEdge(edge_data e, Graphics g) {
-        directed_weighted_graph gg = arena.getGraph();
-        geo_location s = gg.getNode(e.getSrc()).getLocation();
-        geo_location d = gg.getNode(e.getDest()).getLocation();
-        geo_location s0 = this.point.world2frame(s);
-        geo_location d0 = this.point.world2frame(d);
-        g.drawLine((int)s0.x(), (int)s0.y(), (int)d0.x(), (int)d0.y());
-    }
-    private void drawScores (Graphics g) {
-        List<CL_Agent> agents = arena.getAgents();
-        int indexY = 0;
-        for (CL_Agent agent : agents) {
-            g.setColor(Color.BLACK);
-            g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(),700,30+indexY);
-            indexY+= 20;
+        @Override
+        public void actionPerformed (ActionEvent e){
+            repaint();
         }
     }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        repaint();
-    }
-}
