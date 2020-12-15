@@ -29,7 +29,7 @@ public class Ex2 implements Runnable {
 
     @Override
     public void run() {
-        int scenario_num = 0;
+        int scenario_num = 20;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
@@ -85,7 +85,7 @@ public class Ex2 implements Runnable {
                     game.chooseNextEdge(id, toEdge.getDest());
                     CL_Pokemon pokemon = getClosestPokemon(pokemonList, agent, gameGraph);
                     double edgeDistance = nextNode.getLocation().distance(destNode.getLocation());
-                    double distanceToPokemon = nextNode.getLocation().distance(pokemon.getLocation());
+                    double distanceToPokemon = gameGraph.getNode(agent.getSrcNode()).getLocation().distance(pokemon.getLocation());
                     double pokemonDiffOnEdge = distanceToPokemon / edgeDistance;
                     double pokemonLocation = pokemonDiffOnEdge * toEdge.getWeight();
                     agentTTW = (long) ((pokemonLocation / agent.getSpeed()) * calcMoveSpeed);
