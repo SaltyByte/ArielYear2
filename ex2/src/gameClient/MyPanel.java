@@ -23,7 +23,6 @@ public class MyPanel extends JPanel implements ActionListener {
 
     public MyPanel() {
         timer = new Timer(10, this);
-
         timer.start();
     }
 
@@ -49,7 +48,7 @@ public class MyPanel extends JPanel implements ActionListener {
         updateFrame();
         drawPokemons(g);
         drawGraph(g);
-        drawAgants(g);
+        drawAgents(g);
         drawInfo(g);
         drawScores(g);
     }
@@ -57,28 +56,31 @@ public class MyPanel extends JPanel implements ActionListener {
 
     private void drawInfo(Graphics g) {
         List<String> str = arena.get_info();
-        String gameString = str.get(0);
-        JSONObject gameJsonObject;
-        try {
-            gameJsonObject = new JSONObject(gameString);
-            JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
-            int pokemons = gameJsonServer.getInt("pokemons");
-            int moves = gameJsonServer.getInt("moves");
-            int grade = gameJsonServer.getInt("grade");
-            int level = gameJsonServer.getInt("game_level");
-            long time = arena.getTime();
+        if (str != null && !str.isEmpty() && str.get(0) != null) {
+            String gameString = str.get(0);
+            JSONObject gameJsonObject;
+            try {
+                gameJsonObject = new JSONObject(gameString);
+                JSONObject gameJsonServer = gameJsonObject.getJSONObject("GameServer");
+                int pokemons = gameJsonServer.getInt("pokemons");
+                int moves = gameJsonServer.getInt("moves");
+                int grade = gameJsonServer.getInt("grade");
+                int level = gameJsonServer.getInt("game_level");
+                long time = arena.getTime();
+                int w = this.getWidth();
+                int h = this.getHeight();
 
+                g.setFont(new java.awt.Font("Verdana", Font.ITALIC, 17));
+                g.setColor(Color.BLACK);
+                g.drawString("Pokemons on graph : " + pokemons, (int)(w/4), 30);
+                g.drawString("Moves : " + moves, (int)(w/2), 30);
+                g.drawString("Total Grade: " + grade, (int)(w/4), 50);
+                g.drawString("Level : " + level, (int)(w/50), 50);
+                g.drawString("Time left: " + time / 1000, (int)(w/50), 30);
 
-            g.setFont(new java.awt.Font("Verdana", Font.BOLD, 15));
-            g.setColor(Color.BLACK);
-            g.drawString("Pokemons on graph : " + pokemons, 200, 30);
-            g.drawString("Moves : " + moves, 500, 30);
-            g.drawString("Total Grade: " + grade, 200, 50);
-            g.drawString("Level : " + level, 10, 50);
-            g.drawString("Time left: " + time / 1000, 10, 30);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -112,10 +114,10 @@ public class MyPanel extends JPanel implements ActionListener {
         }
     }
 
-    private void drawAgants(Graphics g) {
+    private void drawAgents(Graphics g) {
         List<CL_Agent> agents = arena.getAgents();
         List<String> str = arena.get_info();
-        if (str.get(0) != null) {
+        if (str != null && !str.isEmpty() && str.get(0) != null && agents != null) {
             String gameString = str.get(0);
             JSONObject gameJsonObject;
             try {
@@ -129,7 +131,7 @@ public class MyPanel extends JPanel implements ActionListener {
                     if (c != null) {
                         geo_location fp = this.point.world2frame(c);
                         g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
-                        g.drawString("" + (i), (int) fp.x(), (int) fp.y() - 4 * r);
+                        g.drawString("" + i, (int) fp.x(), (int) fp.y() - 4 * r);
                     }
                 }
             } catch (JSONException e) {
@@ -158,7 +160,7 @@ public class MyPanel extends JPanel implements ActionListener {
             int indexY = 0;
             for (CL_Agent agent : agents) {
                 g.setColor(Color.BLACK);
-                g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), 700, 30 + indexY);
+                g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), (int)(this.getWidth()/1.5), 30 + indexY);
                 indexY += 20;
             }
         }
