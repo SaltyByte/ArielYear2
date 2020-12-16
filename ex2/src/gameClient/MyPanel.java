@@ -158,10 +158,12 @@ public class MyPanel extends JPanel implements ActionListener {
         private void drawScores (Graphics g){
             List<CL_Agent> agents = arena.getAgents();
             int indexY = 0;
-            for (CL_Agent agent : agents) {
-                g.setColor(Color.BLACK);
-                g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), (int)(this.getWidth()/1.5), 30 + indexY);
-                indexY += 20;
+            if (agents != null) {
+                for (CL_Agent agent : agents) {
+                    g.setColor(Color.BLACK);
+                    g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), (int) (this.getWidth() / 1.5), 30 + indexY);
+                    indexY += 20;
+                }
             }
         }
 

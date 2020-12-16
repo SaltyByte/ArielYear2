@@ -29,7 +29,7 @@ public class Ex2 implements Runnable {
 
     @Override
     public void run() {
-        int scenario_num = 11;
+        int scenario_num = 5;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
@@ -58,9 +58,9 @@ public class Ex2 implements Runnable {
         arena.setPokemons(pokemonList);
         long timeToWait = Long.MAX_VALUE;
         int time;
-        try { // best so far 65,80,100
+        try { // best so far 70,80,100
             if (agentList.size() == 1) {
-                time = 65;
+                time = 70;
             }
             else if (agentList.size() == 2) {
                 time = 80;
@@ -70,7 +70,7 @@ public class Ex2 implements Runnable {
             }
 
             for (CL_Agent agent : agentList) {
-                int calcMoveSpeed = (int)(agentList.size() * (agent.getSpeed()/2 + 1) * time);
+                int calcMoveSpeed = (int)(agentList.size() * (agent.getSpeed()/2 + 2) * time);
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
