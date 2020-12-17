@@ -9,10 +9,7 @@ import org.json.JSONObject;
 import javax.swing.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class Ex2 implements Runnable {
@@ -40,7 +37,7 @@ public class Ex2 implements Runnable {
 
     @Override
     public void run() {
-        game_service game = Game_Server_Ex2.getServer(scenarioLevel); // you have [0,23] games
+        game_service game = Game_Server_Ex2.getServer(scenarioLevel);
         game.login(loginID);
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
