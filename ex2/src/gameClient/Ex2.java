@@ -19,18 +19,29 @@ public class Ex2 implements Runnable {
     private static MyPanel panel = new MyPanel();
     private static JFrame frame;
     private static Arena arena;
+    public static int loginID;
+    public static int scenarioLevel;
+    public static Thread server;
     private static HashMap <Integer, CL_Pokemon> agentToPokemon = new HashMap<>();
     private static HashMap <Integer, CL_Pokemon> lastPokemonLocation = new HashMap<>();
 
-    public static void main(String[] t) {
-        Thread server = new Thread(new Ex2());
-        server.start();
+    public static void main(String[] args) {
+        server = new Thread(new Ex2());
+        if (args.length == 2) {
+            loginID = Integer.parseInt(args[0]);
+            scenarioLevel = Integer.parseInt(args[1]);
+            server.start();
+        }
+        else {
+            new loginFrame();
+        }
+
     }
 
     @Override
     public void run() {
-        int scenario_num = 5;
-        game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
+        game_service game = Game_Server_Ex2.getServer(scenarioLevel); // you have [0,23] games
+        game.login(loginID);
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
 
         initGame(game);
@@ -60,7 +71,7 @@ public class Ex2 implements Runnable {
         int time;
         try { // best so far 70,80,100
             if (agentList.size() == 1) {
-                time = 70;
+                time = 75;
             }
             else if (agentList.size() == 2) {
                 time = 80;
@@ -70,7 +81,7 @@ public class Ex2 implements Runnable {
             }
 
             for (CL_Agent agent : agentList) {
-                int calcMoveSpeed = (int)(agentList.size() * (agent.getSpeed()/2 + 2) * time);
+                int calcMoveSpeed = (int)(agentList.size() * (agent.getSpeed() / 2 + 2) * time);
                 long agentTTW;
                 int src = agent.getSrcNode();
                 int id = agent.getID();
@@ -202,6 +213,7 @@ public class Ex2 implements Runnable {
         return gson.fromJson(jsonString, DWGraph_DS.class);
     }
 
+
     private static void initGame(game_service game) {
         List<CL_Pokemon> pokemons = Arena.json2Pokemons(game.getPokemons());
         directed_weighted_graph gameGraph = jsonToGraph(game.getGraph());
@@ -210,14 +222,12 @@ public class Ex2 implements Runnable {
         arena.setGraph(gameGraph);
         arena.setPokemons(pokemons);
         panel.update(arena);
-        frame.setLocation(300,100);
-        frame.pack();
         frame.setTitle("I Wanna Be The Very Best, Like No One Ever Was.");
         frame.add(panel);
         frame.setSize(1000, 700);
+        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
         frame.setResizable(true);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 
         insertAgents(game, gameGraph);
 

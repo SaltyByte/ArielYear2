@@ -70,13 +70,14 @@ public class MyPanel extends JPanel implements ActionListener {
                 int w = this.getWidth();
                 int h = this.getHeight();
 
-                g.setFont(new java.awt.Font("Verdana", Font.ITALIC, 17));
+                g.setFont(new java.awt.Font("Verdana", Font.ITALIC, 13));
                 g.setColor(Color.BLACK);
-                g.drawString("Pokemons on graph : " + pokemons, (int)(w/4), 30);
-                g.drawString("Moves : " + moves, (int)(w/2), 30);
-                g.drawString("Total Grade: " + grade, (int)(w/4), 50);
-                g.drawString("Level : " + level, (int)(w/50), 50);
-                g.drawString("Time left: " + time / 1000, (int)(w/50), 30);
+                g.drawString("Pokemons on graph : " + pokemons, (int)(w/4), (int)(h/12));
+                g.drawString("Moves : " + moves, (int)(w/2), (int)(h/12));
+                g.drawString("Total Grade: " + grade, (int)(w/4), (int)(h/8));
+                g.drawString("Level : " + level, (int)(w/50), (int)(h/12));
+                g.drawString("Time left: " + time / 1000, (int)(w/50), (int)(h/8));
+                g.drawRect((int)(w/70),(int)(h/30),(int)(w/1.05),(int)(h/8));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -161,7 +162,7 @@ public class MyPanel extends JPanel implements ActionListener {
             if (agents != null) {
                 for (CL_Agent agent : agents) {
                     g.setColor(Color.BLACK);
-                    g.drawString("Agent Number :(" + agent.getID() + "). Score is: " + agent.getValue(), (int) (this.getWidth() / 1.5), 30 + indexY);
+                    g.drawString("Agent :(" + agent.getID() + "). Score is: " + agent.getValue(), (int) (this.getWidth() / 1.3), (int)(this.getHeight()/12) + indexY);
                     indexY += 20;
                 }
             }
