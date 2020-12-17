@@ -1,6 +1,5 @@
 package gameClient;
 
-
 import api.*;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
@@ -15,7 +14,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-
+/**
+ * This class extends JPanel Class that creates the panel for the game on the frame,
+ * and implements ActionListener 
+ * It is the main class that includes the function loginFrame.
+ */
 public class MyPanel extends JPanel implements ActionListener {
     private Arena arena;
     private gameClient.util.Range2Range point;
