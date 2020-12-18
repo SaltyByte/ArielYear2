@@ -19,15 +19,15 @@ public interface directed_weighted_graph {
 	/**
 	 * returns the data of the edge (src,dest), null if none.
 	 * Note: this method should run in O(1) time.
-	 * @param src
-	 * @param dest
-	 * @return
+	 * @param src - the source node
+	 * @param dest - the destination node
+	 * @return edge_data - the edge between the source and destination
 	 */
 	public edge_data getEdge(int src, int dest);
 	/**
 	 * adds a new node to the graph with the given node_data.
 	 * Note: this method should run in O(1) time.
-	 * @param n
+	 * @param n - node_data
 	 */
 	public void addNode(node_data n);
 /**
@@ -35,14 +35,14 @@ public interface directed_weighted_graph {
  * * Note: this method should run in O(1) time.
  * @param src - the source of the edge.
  * @param dest - the destination of the edge.
- * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+ * @param w - positive weight representing the cost (aka time, price, etc) between src--dest.
  */
 	public void connect(int src, int dest, double w);
 	/**
 	 * This method returns a pointer (shallow copy) for the
 	 * collection representing all the nodes in the graph. 
 	 * Note: this method should run in O(1) time.
-	 * @return Collection<node_data>
+	 * @return Collection of node_data
 	 */
 	public Collection<node_data> getV();
 	/**
@@ -50,7 +50,8 @@ public interface directed_weighted_graph {
 	 * collection representing all the edges getting out of 
 	 * the given node (all the edges starting (source) at the given node). 
 	 * Note: this method should run in O(k) time, k being the collection size.
-	 * @return Collection<edge_data>
+	 * @param node_id int
+	 * @return Collection of edge_data
 	 */
 	public Collection<edge_data> getE(int node_id);
 	/**
@@ -58,31 +59,31 @@ public interface directed_weighted_graph {
 	 * and removes all edges which starts or ends at this node.
 	 * This method should run in O(k), V.degree=k, as all the edges should be removed.
 	 * @return the data of the removed node (null if none). 
-	 * @param key
+	 * @param key - the node id
 	 */
 	public node_data removeNode(int key);
 	/**
 	 * Deletes the edge from the graph,
 	 * Note: this method should run in O(1) time.
-	 * @param src
-	 * @param dest
+	 * @param src - the source node
+	 * @param dest - the destination node
 	 * @return the data of the removed edge (null if none).
 	 */
 	public edge_data removeEdge(int src, int dest);
 	/** Returns the number of vertices (nodes) in the graph.
 	 * Note: this method should run in O(1) time. 
-	 * @return
+	 * @return int node size
 	 */
 	public int nodeSize();
 	/** 
 	 * Returns the number of edges (assume directional graph).
 	 * Note: this method should run in O(1) time.
-	 * @return
+	 * @return int edge size
 	 */
 	public int edgeSize();
 /**
  * Returns the Mode Count - for testing changes in the graph.
- * @return
+ * @return int mode counter
  */
 	public int getMC();
 }

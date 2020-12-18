@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class represents a multi Agents Arena which move on a graph - grabs Pokemons and avoid the Zombies.
+ * This class represents a multi Agents Arena which move on a graph - grabs Pokemons.
  * @author boaz.benmoshe
  *
  */
@@ -31,21 +31,50 @@ public class Arena {
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
 
+	/**
+	 * Default constructor.
+	 */
 	public Arena() {;
 		_info = new ArrayList<String>();
 	}
-	private Arena(directed_weighted_graph g, List<CL_Agent> r, List<CL_Pokemon> p) {
+	
+	/**
+	 * Constructor.
+	 * @param g - the adirected_weighted_graph
+	 * @param listOfAgents - List of CL_Agent
+	 * @param listOfPokemons - List of CL_Pokemon
+	 */
+	private Arena(directed_weighted_graph g, List<CL_Agent> listOfAgents, List<CL_Pokemon> listOfPokemons) {
 		_gg = g;
-		this.setAgents(r);
-		this.setPokemons(p);
+		this.setAgents(listOfAgents);
+		this.setPokemons(listOfPokemons);
 	}
-	public void setPokemons(List<CL_Pokemon> f) {
-		this._pokemons = f;
+	
+	/**
+	 * Set the pokemons.
+	 * @param listOfPokemons - list of pokemons
+	 */
+	public void setPokemons(List<CL_Pokemon> listOfPokemons) {
+		this._pokemons = listOfPokemons;
 	}
-	public void setAgents(List<CL_Agent> f) {
-		this._agents = f;
+	
+	/**
+	 * Set the agents.
+	 * @param listOfAgents - list of agents
+	 */
+	public void setAgents(List<CL_Agent> listOfAgents) {
+		this._agents = listOfAgents;
 	}
+	
+	/**
+	 * Set the graph.
+	 * @param g - directed weighted graph
+	 */
 	public void setGraph(directed_weighted_graph g) {this._gg =g;}//init();}
+	
+	/**
+	 * Init the arena.
+	 */
 	private void init( ) {
 		MIN=null; MAX=null;
 		double x0=0,x1=0,y0=0,y1=0;
@@ -63,21 +92,49 @@ public class Arena {
 		MAX = new Point3D(x1+dx/10,y1+dy/10);
 		
 	}
+	
+	/**
+	 * Get the list of agents.
+	 * @return List of CL_Agent - returns the list of agents
+	 */
 	public List<CL_Agent> getAgents() {return _agents;}
+
+	/**
+	 * Get the list of pokemons.
+	 * @return List of CL_Pokemon - returns the list of pokemons
+	 */
 	public List<CL_Pokemon> getPokemons() {return _pokemons;}
 
-	
+	/**
+	 * Get the graph.
+	 * @return directed weighted graph - the graph
+	 */
 	public directed_weighted_graph getGraph() {
 		return _gg;
 	}
+	
+	/**
+	 * Get the info of the arena.
+	 * @return List of String - returns the list of the info
+	 */
 	public List<String> get_info() {
 		return _info;
 	}
+	
+	/**
+	 * Set the info of the arena.
+	 * @param _info - List of String
+	 */
 	public void set_info(List<String> _info) {
 		this._info = _info;
 	}
 
-	////////////////////////////////////////////////////
+	/**
+	 * Get the agents of the arena.
+	 * @param aa - String
+	 * @param gg - dircted_weighted_graph
+	 * @return List of CL_Agent - returns the list of agents
+	 */
 	public static List<CL_Agent> getAgents(String aa, directed_weighted_graph gg) {
 		ArrayList<CL_Agent> ans = new ArrayList<CL_Agent>();
 		try {
@@ -94,10 +151,16 @@ public class Arena {
 		}
 		return ans;
 	}
-	public static ArrayList<CL_Pokemon> json2Pokemons(String fs) {
+	
+	/**
+	 * Returns a list of pokemons from the JSON string.
+	 * @param jsonString - String
+	 * @return ArrayList of CL_Pokemon - returns an array list of pokemons
+	 */
+	public static ArrayList<CL_Pokemon> json2Pokemons(String jsonString) {
 		ArrayList<CL_Pokemon> ans = new  ArrayList<CL_Pokemon>();
 		try {
-			JSONObject ttt = new JSONObject(fs);
+			JSONObject ttt = new JSONObject(jsonString);
 			JSONArray ags = ttt.getJSONArray("Pokemons");
 			for(int i=0;i<ags.length();i++) {
 				JSONObject pp = ags.getJSONObject(i);
@@ -113,7 +176,13 @@ public class Arena {
 		catch (JSONException e) {e.printStackTrace();}
 		return ans;
 	}
-	public static void updateEdge(CL_Pokemon fr, directed_weighted_graph g) {
+	
+	/**
+	 * Update the edge of the arena.
+	 * @param pokemon - CL_Pokemon
+	 * @param g - directed_weighted_graph
+	 */
+	public static void updateEdge(CL_Pokemon pokemon, directed_weighted_graph g) {
 		//	oop_edge_data ans = null;
 		Iterator<node_data> itr = g.getV().iterator();
 		while(itr.hasNext()) {
@@ -121,65 +190,111 @@ public class Arena {
 			Iterator<edge_data> iter = g.getE(v.getKey()).iterator();
 			while(iter.hasNext()) {
 				edge_data e = iter.next();
-				boolean f = isOnEdge(fr.getLocation(), e,fr.getType(), g);
-				if(f) {fr.set_edge(e);}
+				boolean f = isOnEdge(pokemon.getLocation(), e,pokemon.getType(), g);
+				if(f) {pokemon.set_edge(e);}
 			}
 		}
 	}
 
-	private static boolean isOnEdge(geo_location p, geo_location src, geo_location dest ) {
+	/**
+	 * Check if position is on edge.
+	 * @param pos - geo_location
+	 * @param src - geo_location
+	 * @param dest - geo_location
+	 * @return boolean - returns true if the position given is on the edge, else returns false
+	 */
+	private static boolean isOnEdge(geo_location pos, geo_location src, geo_location dest) {
 
-		boolean ans = false;
-		double dist = src.distance(dest);
-		double d1 = src.distance(p) + p.distance(dest);
-		if(dist>d1-EPS2) {ans = true;}
-		return ans;
+		boolean isOnEdge = false;
+		double distance = src.distance(dest);
+		double sumDistance = src.distance(pos) + pos.distance(dest);
+		if(distance>sumDistance-EPS2) {isOnEdge = true;}
+		return isOnEdge;
 	}
-	private static boolean isOnEdge(geo_location p, int s, int d, directed_weighted_graph g) {
+	
+	/**
+	 * Check if position is on edge.
+	 * @param pos - geo_location
+	 * @param s - the src node
+	 * @param d - the dest node
+	 * @param g - directed_weighted_graph
+	 * @return boolean - returns true if the position given is on the edge, else returns false
+	 */
+	private static boolean isOnEdge(geo_location pos, int s, int d, directed_weighted_graph g) {
 		geo_location src = g.getNode(s).getLocation();
 		geo_location dest = g.getNode(d).getLocation();
-		return isOnEdge(p,src,dest);
+		return isOnEdge(pos,src,dest);
 	}
-	private static boolean isOnEdge(geo_location p, edge_data e, int type, directed_weighted_graph g) {
-		int src = g.getNode(e.getSrc()).getKey();
-		int dest = g.getNode(e.getDest()).getKey();
+	
+	/**
+	 * Check if position is on edge.
+	 * @param pos - geo_location
+	 * @param edge - edge_data
+	 * @param type - int
+	 * @param g - directed_weighted_graph
+	 * @return boolean - returns true if the position given is on the edge, else returns false
+	 */
+	private static boolean isOnEdge(geo_location pos, edge_data edge, int type, directed_weighted_graph g) {
+		int src = g.getNode(edge.getSrc()).getKey();
+		int dest = g.getNode(edge.getDest()).getKey();
 		if(type<0 && dest>src) {return false;}
 		if(type>0 && src>dest) {return false;}
-		return isOnEdge(p,src, dest, g);
+		return isOnEdge(pos,src, dest, g);
 	}
 
+	/**
+	 * Returns the graph range in two dimensions.
+	 * @param g - directed_weighted_graph
+	 * @return Range2D - returns the graph range in two dimensions
+	 */
 	private static Range2D GraphRange(directed_weighted_graph g) {
 		Iterator<node_data> itr = g.getV().iterator();
 		double x0=0,x1=0,y0=0,y1=0;
 		boolean first = true;
 		while(itr.hasNext()) {
-			geo_location p = itr.next().getLocation();
+			geo_location pos = itr.next().getLocation();
 			if(first) {
-				x0=p.x(); x1=x0;
-				y0=p.y(); y1=y0;
+				x0=pos.x(); x1=x0;
+				y0=pos.y(); y1=y0;
 				first = false;
 			}
 			else {
-				if(p.x()<x0) {x0=p.x();}
-				if(p.x()>x1) {x1=p.x();}
-				if(p.y()<y0) {y0=p.y();}
-				if(p.y()>y1) {y1=p.y();}
+				if(pos.x()<x0) {x0=pos.x();}
+				if(pos.x()>x1) {x1=pos.x();}
+				if(pos.y()<y0) {y0=pos.y();}
+				if(pos.y()>y1) {y1=pos.y();}
 			}
 		}
 		Range xr = new Range(x0,x1);
 		Range yr = new Range(y0,y1);
 		return new Range2D(xr,yr);
 	}
+	
+	/**
+	 * Returns the graph range in two dimensions.
+	 * @param g - directed_weighted_graph
+	 * @param frame - Range2D
+	 * @return Range2Range - returns Range2Range
+	 */
 	public static Range2Range w2f(directed_weighted_graph g, Range2D frame) {
 		Range2D world = GraphRange(g);
 		Range2Range ans = new Range2Range(world, frame);
 		return ans;
 	}
+	
+	/**
+	 * Set the time of the arena.
+	 * @param time - long
+	 */
 	public void setTime(long time){
 		this.time = time;
 	}
+	
+	/**
+	 * Get the time of the arena.
+	 * @return long - returns the time of the arena
+	 */
 	public long getTime() {
 		return this.time;
 	}
-
 }

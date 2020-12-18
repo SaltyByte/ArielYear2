@@ -53,9 +53,9 @@ public class SimpleGameClient {
 	}
 	/**
 	 * a very simple random walk implementation!
-	 * @param g
-	 * @param src
-	 * @return
+	 * @param g - directed weighted graph
+	 * @param src - the source node key
+	 * @return next node - returns the next node
 	 */
 	private static int nextNode(directed_weighted_graph g, int src) {
 		int ans = -1;

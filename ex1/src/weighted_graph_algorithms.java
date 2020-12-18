@@ -6,7 +6,7 @@ import java.util.List;
  * 1. init(graph);
  * 2. isConnected();
  * 3. double shortestPathDist(int src, int dest);
- * 4. List<node_data> shortestPath(int src, int dest);
+ * 4. List of node_data shortestPath(int src, int dest);
  * 5. Save(file);
  * 6. Load(file);
  *
@@ -16,42 +16,42 @@ import java.util.List;
 public interface weighted_graph_algorithms {
     /**
      * Init the graph on which this set of algorithms operates on.
-     * @param g
+     * @param g - weighted graph
      */
     public void init(weighted_graph g);
 
     /**
      * Return the underlying graph of which this class works.
-     * @return
+     * @return weigted_graph
      */
     public weighted_graph getGraph();
     /**
      * Compute a deep copy of this weighted graph.
-     * @return
+     * @return weighted_graph - the copied weighted graph
      */
     public weighted_graph copy();
     /**
      * Returns true if and only if (iff) there is a valid path from EVREY node to each
      * other node. NOTE: assume ubdirectional graph.
-     * @return
+     * @return boolean - returns true if graph is connected, else returns false 
      */
     public boolean isConnected();
     /**
      * returns the length of the shortest path between src to dest
-     * Note: if no such path --> returns -1
+     * Note: if no such path then returns -1
      * @param src - start node
      * @param dest - end (target) node
-     * @return
+     * @return double - the shortest path distance
      */
     public double shortestPathDist(int src, int dest);
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
-     * src--> n1-->n2-->...dest
+     * src--n1--n2--...dest
      * see: https://en.wikipedia.org/wiki/Shortest_path_problem
-     * Note if no such path --> returns null;
+     * Note if no such path -- returns null;
      * @param src - start node
      * @param dest - end (target) node
-     * @return
+     * @return List of node_info
      */
     public List<node_info> shortestPath(int src, int dest);
 

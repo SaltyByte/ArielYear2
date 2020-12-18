@@ -29,6 +29,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	/**
 	 * Deep copy constructor that copies
 	 * an existing graph and creates a new graph.
+	 * @param g - directed_weighted_graph
 	 */
 	public DWGraph_DS(directed_weighted_graph g) {
 		// Check if graph is null else copy
@@ -99,7 +100,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	 * Connects an edge with weight w between node src to node dest.
 	 * @param src - the source of the edge.
 	 * @param dest - the destination of the edge.
-	 * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
+	 * @param w - positive weight representing the cost (aka time, price, etc) between src--dest.
 	 */
 	@Override
 	public void connect(int src, int dest, double w) {
@@ -136,7 +137,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	/**
 	 * This method returns a pointer (shallow copy) for the
 	 * collection representing all the nodes in the graph. 
-	 * @return Collection<node_data>
+	 * @return Collection of node_data
 	 */
 	@Override
 	public Collection<node_data> getV() {
@@ -148,7 +149,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	 * collection representing all the edges getting out of 
 	 * the given node (all the edges starting (source) at the given node). 
 	 * Note: this method should run in O(k) time, k being the collection size.
-	 * @return Collection<edge_data>
+	 * @return Collection of edge_data
 	 */
 	@Override
 	public Collection<edge_data> getE(int node_id) {

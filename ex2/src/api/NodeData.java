@@ -14,7 +14,7 @@ public class NodeData implements node_data {
 
     /**
 	 * Constructor that copies the key.
-	 * @param int key - the key that needs to be copied
+	 * @param key - the key that needs to be copied
 	 */
     public NodeData(int key) {
         this.key = key;

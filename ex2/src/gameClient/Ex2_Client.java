@@ -55,9 +55,8 @@ public class Ex2_Client implements Runnable{
 	/** 
 	 * Moves each of the agents along the edge,
 	 * in case the agent is on a node the next destination (next edge) is chosen (randomly).
-	 * @param game
-	 * @param gg
-	 * @param
+	 * @param game - game service
+	 * @param gg - directed weighted graph
 	 */
 	private static void moveAgants(game_service game, directed_weighted_graph gg) {
 		String lg = game.move();
@@ -82,9 +81,9 @@ public class Ex2_Client implements Runnable{
 	}
 	/**
 	 * a very simple random walk implementation!
-	 * @param g
-	 * @param src
-	 * @return
+	 * @param g - directed weighted graph
+	 * @param src - the source node key
+	 * @return next node - returns the next node
 	 */
 	private static int nextNode(directed_weighted_graph g, int src) {
 		int ans = -1;

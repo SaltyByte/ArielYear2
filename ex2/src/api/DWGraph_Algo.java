@@ -28,7 +28,7 @@ import com.google.gson.JsonParseException;
  * 1. init(graph);
  * 2. isConnected(); // strongly (all ordered pais connected)
  * 3. double shortestPathDist(int src, int dest);
- * 4. List<node_data> shortestPath(int src, int dest);
+ * 4. List of node_data - shortestPath(int src, int dest);
  * 5. Save(file); // JSON file
  * 6. Load(file); // JSON file
  */
@@ -101,7 +101,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Returns the length of the shortest path between src to dest,
-	 * If no such path --> returns -1.
+	 * If no such path -- returns -1.
 	 * @param src - start node
 	 * @param dest - end (target) node
 	 * @return double - the shortest distance between src and dest
@@ -129,11 +129,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 	/**
 	 * Returns the shortest path between src to dest - as an ordered List of nodes:
-	 * src--> n1-->n2-->...dest
-	 * If no such path --> returns null.
+	 * src--n1--n2--...dest
+	 * If no such path -- returns null.
 	 * @param src - start node
 	 * @param dest - end (target) node
-	 * @return List<node_data>
+	 * @return List of node_data
 	 */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
@@ -175,8 +175,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	/** 
 	 * Private function that uses Dijkstra algorithm from src to dest nodes and for each node it saves
 	 * the minimum sum weight and its parent calculated from src.
-	 * @param Integer src - starting node
-	 * @param Integer dest - end (target) node
+	 * @param src - starting node
+	 * @param dest - end (target) node
 	 */
 	private void Dijkstra(Integer src, Integer dest) {
 		dijkstraNodeMap = new HashMap<>();
@@ -303,11 +303,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 	private class WeightComparator implements Comparator<node_data> {
 
 		/**
-		 * Overrides compare method by tag (weight), if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+		 * Overrides compare method by tag (weight), if node1 is greater than node2 return 1,
+		 * if node1 is less than node2 return -1, else return 0.
 		 * used in the priorityQueue.
 		 * @param node1 - node1 to compare
 		 * @param node2 - node2 to compare
-		 * @return - int if node1 > node2 return 1, if node1 < node2 return -1, else return 0.
+		 * @return If node1 is greater than node2 return 1, if node1 is less than node2 return -1, else return 0.
 		 */
 		@Override
 		public int compare(node_data node1, node_data node2) {

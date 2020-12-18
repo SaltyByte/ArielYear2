@@ -17,45 +17,45 @@ import java.io.Serializable;
 public interface game_service extends Serializable{	
 	/**
 	 * Returns a JSON representation of graph as a JSON String.
-	 * @return
+	 * @return String - JSON represention of the graph
 	 */
 	public String getGraph();
 	/**
 	 * Returns an interface to the graph (should NOT be used) for final version - for testing only.
-	 * @return
+	 * @return directed_weighted_graph - the graph
 	 */
 	default directed_weighted_graph getJava_Graph_Not_to_be_used() {return null;}
 	/**
 	 * Returns a JSON string, representing all Pokemons (fixed bonus coin).
-	 * @return
+	 * @return String - the pokemons
 	 */
 	public String getPokemons();
 	/**
 	 * Returns a JSON string, representing all the Agents.
-	 * @return
+	 * @return String - the agents
 	 */
 	public String getAgents();
 	/** 
-	 * This method allows the user to add & locate the agents,
+	 * This method allows the user to add and locate the agents,
 	 * all should be located in order to start a game.   
 	 * 
 	 * @param start_node - the vertex in the graph from which the agent will start.
-	 * @return
+	 * @return boolean - returns true if agent was added, else returns false
 	 */
 	public boolean addAgent(int start_node);
-		/**
-		 * Start a new game
-		 * @return the time (new Date().getTime()) if a new game was started, else -1.
-		 */
+	/**
+	 * Start a new game
+	 * @return the time (new Date().getTime()) if a new game was started, else -1.
+	 */
 	public long startGame();
 	/**
 	 * Returns the current status of the game (true: is running, false: NOT running).
-	 * @return
+	 * @return boolean - returns true if game is running, else returns false
 	 */
 	public boolean isRunning();
 	/**
 	 * Stops the game, after this method the isRunning() will return false
-	 * @return
+	 * @return long - stops the game
 	 */
 	public long stopGame();
 	/**
@@ -69,7 +69,7 @@ public interface game_service extends Serializable{
 	/**
 	 * return the number of mili-seconds till the game is over
 	 * 
-	 * @return
+	 * @return long - time to end
 	 */
 	public long timeToEnd();
 	/**
@@ -81,9 +81,9 @@ public interface game_service extends Serializable{
 	public String move();
 	/**
 	 * Performs a login - so the results of the game will be stored in the data-base after the game,
-	 * requires Internet connection. The following data is stored: id, level, number of moves, grade & time.
-	 * @param id
-	 * @return: true iff the user was successfully logged-in to the server.
+	 * requires Internet connection. The following data is stored: id, level, number of moves, grade and time.
+	 * @param id - the id of user
+	 * @return boolean - true iff the user was successfully logged-in to the server.
 	 */
 	public boolean login(long id);
 }

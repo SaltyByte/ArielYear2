@@ -7,6 +7,9 @@ import api.node_data;
 import gameClient.util.Point3D;
 import org.json.JSONObject;
 
+/**
+ * This class includes information about agent in the game.
+ */
 public class CL_Agent {
 		public static final double EPS = 0.0001;
 		private static int _count = 0;
@@ -23,7 +26,11 @@ public class CL_Agent {
 		
 		private double _value;
 		
-		
+		/**
+		 * Constructor
+		 * @param g - directed_weighted_graph
+		 * @param start_node - int
+		 */
 		public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
 			setMoney(0);
@@ -32,6 +39,11 @@ public class CL_Agent {
 			_id = -1;
 			setSpeed(0);
 		}
+		
+		/**
+		 * Updates the agent information from the JSON String
+		 * @param json - String
+		 */
 		public void update(String json) {
 			JSONObject line;
 			try {
@@ -52,15 +64,22 @@ public class CL_Agent {
 					this.setSpeed(speed);
 					this.setNextNode(dest);
 					this.setMoney(value);
-
 				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		//@Override
+		/**
+		 * Get the src node of the agent.
+		 * @return src node - int
+		 */
 		public int getSrcNode() {return this._curr_node.getKey();}
+		
+		/**
+		 * Returns the information of the agent as a string JSON.
+		 * @return string - the JSON string
+		 */
 		public String toJSON() {
 			int d = this.getNextNode();
 			String ans = "{\"Agent\":{"
@@ -74,8 +93,18 @@ public class CL_Agent {
 					+ "}";
 			return ans;	
 		}
+		
+		/**
+		 * Set the money.
+		 * @param v - double
+		 */
 		private void setMoney(double v) {_value = v;}
 	
+		/**
+		 * Set the next node for the agent.
+		 * @param dest - the destination node
+		 * @return boolean - Returns true if was set, else returns false
+		 */
 		public boolean setNextNode(int dest) {
 			boolean ans = false;
 			int src = this._curr_node.getKey();
@@ -86,37 +115,64 @@ public class CL_Agent {
 			else {_curr_edge = null;}
 			return ans;
 		}
+		
+		/**
+		 * Set the current node for the agent.
+		 * @param src - the source node
+		 */
 		public void setCurrNode(int src) {
 			this._curr_node = _gg.getNode(src);
 		}
+		
+		/**
+		 * Check if the agent is moving.
+		 * @return boolean - if the agent is moving, returns true, else returns false
+		 */
 		public boolean isMoving() {
 			return this._curr_edge!=null;
 		}
+		
+		/**
+		 * Returns the String of the JSON.
+		 * @return String - Returns the String of the JSON
+		 */
 		public String toString() {
 			return toJSON();
 		}
+		
 		public String toString1() {
 			String ans=""+this.getID()+","+_pos+", "+isMoving()+","+this.getValue();	
 			return ans;
 		}
+		
+		/**
+		 * Returns the ID of the agent.
+		 * @return int - the agent ID number
+		 */
 		public int getID() {
-			// TODO Auto-generated method stub
 			return this._id;
 		}
 	
+		/**
+		 * Gets the location of the agent.
+		 * @return geo_location - returns the location of the agent
+		 */
 		public geo_location getLocation() {
-			// TODO Auto-generated method stub
 			return _pos;
 		}
 
-		
+		/**
+		 * Gets the value of the agent.
+		 * @return double - returns the value of the agent
+		 */
 		public double getValue() {
-			// TODO Auto-generated method stub
 			return this._value;
 		}
 
-
-
+		/**
+		 * Gets the next node of the agent.
+		 * @return int - returns the next node of the agent
+		 */
 		public int getNextNode() {
 			int ans = -2;
 			if(this._curr_edge==null) {
@@ -127,19 +183,42 @@ public class CL_Agent {
 			return ans;
 		}
 
+		/**
+		 * Gets the speed of the agent.
+		 * @return double - returns the speed of the agent
+		 */
 		public double getSpeed() {
 			return this._speed;
 		}
 
+		/**
+		 * Sets the speed of the agent.
+		 * @param v - double
+		 */
 		public void setSpeed(double v) {
 			this._speed = v;
 		}
+		
+		/**
+		 * Gets the current fruit of the agent.
+		 * @return CL_Pokemon - returns the current fruit of the agent
+		 */
 		public CL_Pokemon get_curr_fruit() {
 			return _curr_fruit;
 		}
+		
+		/**
+		 * Sets the current fruit of the agent.
+		 * @param curr_fruit - CL_Pokemon
+		 */
 		public void set_curr_fruit(CL_Pokemon curr_fruit) {
 			this._curr_fruit = curr_fruit;
 		}
+		
+		/**
+		 * Sets the SDT of the agent.
+		 * @param ddtt - long
+		 */
 		public void set_SDT(long ddtt) {
 			long ddt = ddtt;
 			if(this._curr_edge!=null) {
@@ -158,14 +237,27 @@ public class CL_Agent {
 			this.set_sg_dt(ddt);
 		}
 		
+		/**
+		 * Gets the current edge of the agent.
+		 * @return edge_data - returns the current edge of the agent
+		 */
 		public edge_data get_curr_edge() {
 			return this._curr_edge;
 		}
+		
+		/**
+		 * Gets the sg_dt of the agent.
+		 * @return long - returns the sg_dt of the agent
+		 */
 		public long get_sg_dt() {
 			return _sg_dt;
 		}
+		
+		/**
+		 * Returns the sg_dt of the agent.
+		 * @param _sg_dt - long
+		 */
 		public void set_sg_dt(long _sg_dt) {
 			this._sg_dt = _sg_dt;
 		}
-
 	}

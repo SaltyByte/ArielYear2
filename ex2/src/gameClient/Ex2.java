@@ -180,7 +180,7 @@ public class Ex2 implements Runnable {
 	 * it uses the src dest that this method received
 	 * and gets the next node (the index 1) in the list of the shortest path.
 	 * If the list of the shortest path size is equal to 1, then it gets the first node in the list.
-	 * @param gameGraph - the directed weighted graph of the game
+	 * @param graph - the directed weighted graph of the game
 	 * @param src - the start node
 	 * @param dest - the dest node
 	 * @return node_data - the next node in the list that provides the shortest path
@@ -315,8 +315,8 @@ public class Ex2 implements Runnable {
 		 * Override the deserialize method for DWGRaph_DS.
 		 * @param json - the JSON element
 		 * @param arg1 - the type
-		 * @param args2 - the JSON deserialization context
-		 * @return DWGRaph_DS - returns the graph
+		 * @param arg2 - the JSON deserialization context
+		 * @return DWGraph_DS - returns the graph
 		 */
 		@Override
 		public DWGraph_DS deserialize(JsonElement json, Type arg1, JsonDeserializationContext arg2) throws JsonParseException {
@@ -353,12 +353,13 @@ public class Ex2 implements Runnable {
 
 		/**
 		 * Overrides compare method by the value of pokemons,
-		 * if pokemon1 > pokemon2 return -1, if pokemon1 < pokemon2 return 1, else return 0.
+		 * if pokemon1 is larger than pokemon2 return -1,
+		 * if pokemon1 is less than pokemon2 return 1, else return 0.
 		 * used in the priorityQueue.
 		 *
 		 * @param pokemon1 to compare
 		 * @param pokemon2 to compare
-		 * @return - int if pokemon1 > pokemon2 return -1, if pokemon1 < pokemon2 return 1, else return 0.
+		 * @return - int if pokemon1 is larger than pokemon2 return -1, if pokemon1 is less than pokemon2 return 1, else return 0.
 		 */
 		@Override
 		public int compare(CL_Pokemon pokemon1, CL_Pokemon pokemon2) {
