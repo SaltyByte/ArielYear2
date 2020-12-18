@@ -1,5 +1,3 @@
-package tests;
-
 import api.*;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +16,6 @@ class DWGraph_AlgoTest {
 		assertNull(ga.getGraph());
 		ga.init(g);
 		assertEquals(g, ga.getGraph());
-	}
-
-	@Test
-	void getGraph() {
 	}
 
 	@Test

@@ -1,6 +1,3 @@
-package tests;
-
-
 import api.DWGraph_DS;
 import api.NodeData;
 import api.directed_weighted_graph;

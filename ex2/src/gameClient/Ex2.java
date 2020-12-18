@@ -71,7 +71,6 @@ public class Ex2 implements Runnable {
 			arena.set_info(info);
 			moveAgents(game, gameGraph);
 		}
-		System.out.println(game.toString());
 		System.exit(0);
 		game.stopGame();
 	}
@@ -185,7 +184,7 @@ public class Ex2 implements Runnable {
 	 * @param dest - the dest node
 	 * @return node_data - the next node in the list that provides the shortest path
 	 */
-	private static node_data nextNode(directed_weighted_graph graph, int src, int dest) {
+	public static node_data nextNode(directed_weighted_graph graph, int src, int dest) {
 		dw_graph_algorithms algoGraph = new DWGraph_Algo();
 		algoGraph.init(graph);
 		List<node_data> shortestPath = algoGraph.shortestPath(src, dest);
@@ -274,7 +273,7 @@ public class Ex2 implements Runnable {
 	 * @param jsonString - the JSON string
 	 * @return directed weighted graph - returns the directed_weighted_graph that was built.
 	 */
-	public static directed_weighted_graph jsonToGraph(String jsonString) {
+	private static directed_weighted_graph jsonToGraph(String jsonString) {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(DWGraph_DS.class, new GraphJsonDeserializer());
 		Gson gson = builder.create();
