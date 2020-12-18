@@ -25,7 +25,7 @@ Part Two Explanation:
 Second part is mainly focused on a pokemon game which is located in the src/gameClient folders.  
 The game is based on the part one graphs, first we insert the agents on the graph near the pokemon which has highest value,  
 then the agent is going after the closest pokemon which no other agent is going after.  
-We must use moves as little as we can, and still get the highest grade possible. 
+We must use moves as little as we can, and still get the highest grade possible.  
 
 The agent knows how to follow the closest pokemon via part one graph algorithm which is shortest path.
 Depends on the scenario level, the game ends after the time ends.  
@@ -33,5 +33,8 @@ The agents use a very accurate algorithm to catch the pokemons.
 When no pokemon on the edge the agent just jumps to the dest node resulting in one move used.  
 When there is a pokemon the agent jumps on the edge as low as we can time so we get good move count but still catch the pokemon or more if necessary.  
 
- 
+To run a scenario first we run the Ex2 class, in the User ID text field we enter out id,  
+in the Scenario we enter the level number we wish to run (note only [0,23] games).  
+After all the information is inserted correctly, press start button and the game should run.  
+After the game ends it stops and closses the frame.  
  
