@@ -34,7 +34,7 @@ When no pokemon on the edge the agent just jumps to the dest node resulting in o
 When there is a pokemon the agent jumps on the edge as low as we can time so we get good move count but still catch the pokemon or more if necessary.  
 
 To run a scenario first we run the Ex2 class, in the User ID text field we enter out id,  
-in the Scenario we enter the level number we wish to run (note only [0,23] games).  
+in the Scenario we enter the level number we wish to run.  
 After all the information is inserted correctly, press start button and the game should run.  
 After the game ends it stops and closses the frame.  
  
